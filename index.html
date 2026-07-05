@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>熊爪小岛</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;font-family:"Microsoft YaHei",sans-serif}
+#game{width:375px;height:667px;position:relative;overflow:hidden;border-radius:14px;box-shadow:0 0 40px rgba(80,60,200,.3)}
+.bg{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a 0%,#141435 30%,#1a1a3e 60%,#0f0f28 100%);z-index:0}
+#top{z-index:10;position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(30,20,50,.98),rgba(25,18,45,.95));display:flex;align-items:center;padding:0 14px;border-bottom:1px solid rgba(255,215,0,.15)}
+#gld{color:#ffd700;font-size:18px;font-weight:bold;flex:1;text-shadow:0 0 8px rgba(255,215,0,.3)}
+#gms{color:#6cf;font-size:18px;font-weight:bold;text-shadow:0 0 8px rgba(102,204,255,.3)}
+#rate{position:absolute;top:40px;left:0;right:0;text-align:center;color:#8a8;font-size:11px;z-index:10}
+#scroll{z-index:5;position:absolute;top:60px;bottom:64px;left:0;right:0;overflow-y:auto;padding:6px 10px}
+#scroll::-webkit-scrollbar{width:0}
+#bottom{z-index:10;position:absolute;bottom:0;left:0;right:0;height:64px;background:linear-gradient(0deg,rgba(25,18,45,.98),rgba(30,20,50,.95));display:flex;justify-content:space-evenly;align-items:center;border-top:1px solid rgba(255,215,0,.15);gap:1px}
+.bbtn{padding:8px 4px;border-radius:10px;font-size:10px;font-weight:bold;cursor:pointer;border:none;color:#fff;transition:transform .15s,filter .15s;flex:1;margin:0 1px}
+.bbtn:active{transform:scale(.94);filter:brightness(1.2)}
+.bbtn.e{background:linear-gradient(135deg,#3a8,#2a6)}
+.bbtn.c{background:linear-gradient(135deg,#48a,#369)}
+.bbtn.d{background:linear-gradient(135deg,#a3a,#825)}
+.bbtn.a{background:linear-gradient(135deg,#c84,#a63)}
+.bbtn.s{background:linear-gradient(135deg,#c84,#a63)}
+.bbtn.t{background:linear-gradient(135deg,#fc6,#c84)}
+.card{background:linear-gradient(135deg,rgba(45,35,70,.92),rgba(35,28,58,.92));border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.05);transition:transform .2s,box-shadow .2s}
+.card:active{transform:translateX(2px);box-shadow:0 2px 12px rgba(100,80,200,.15)}
+.card.lv0 .name{color:#aaa}
+.card .ico{font-size:30px;margin-right:10px;width:44px;text-align:center;filter:drop-shadow(0 0 4px rgba(255,200,50,.3));color-scheme:normal;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
+.card .info{flex:1}
+.card .name{color:#ffd700;font-size:14px;font-weight:bold}
+.card .level{color:#999;font-size:11px}
+.card .rate{color:#8a8;font-size:10px}
+.card .act{padding:8px 0;width:60px;border-radius:7px;font-size:12px;font-weight:bold;cursor:pointer;border:none;color:#fff;text-align:center}
+.card .act:active{transform:scale(.93)}
+.act.build{background:linear-gradient(135deg,#5a8,#3a6)}
+.act.max{background:#333;color:#666;cursor:default}
+.overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);display:none;justify-content:center;align-items:center;z-index:100}
+.overlay.show{display:flex}
+.popup{background:linear-gradient(180deg,#2a2a4e,#222242);border-radius:16px;padding:28px 24px;text-align:center;max-width:290px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.15);animation:popIn .25s ease-out}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.popup .pt{font-size:24px;color:#ffd700;margin-bottom:10px}
+.popup .pd{color:#bbb;font-size:14px;margin-bottom:20px;white-space:pre-line;line-height:1.5}
+.popup .pb{display:flex;gap:10px;justify-content:center}
+.pbtn{padding:10px 28px;border-radius:10px;font-size:15px;font-weight:bold;border:none;color:#fff;cursor:pointer;transition:transform .15s}
+.pbtn:active{transform:scale(.94)}
+.pbtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
+.pbtn.cancel{background:linear-gradient(135deg,#855,#633)}
+.panel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a,#141435);display:none;z-index:50;overflow-y:auto;padding:24px 16px}
+.panel .ptitle{text-align:center;color:#ffd700;font-size:22px;font-weight:bold;margin-bottom:4px}
+.panel .psub{text-align:center;color:#888;font-size:13px;margin-bottom:18px}
+.pitem{background:rgba(40,30,65,.7);border-radius:10px;padding:14px 16px;margin-bottom:8px;border:1px solid rgba(255,255,255,.04)}
+.pitem .pi{font-size:24px;margin-right:12px}
+.pitem.flex{display:flex;align-items:center}
+.pitem .ptx{flex:1}
+.pitem .pn{font-size:15px;font-weight:bold}
+.pitem .pd{font-size:11px;color:#777;margin-top:2px}
+.pitem .pr{color:#c84;font-size:13px;font-weight:bold;min-width:60px}
+.pitem.locked .pn{color:#555}
+.pitem.found .pn{color:#ffd700}
+.daily-bar{width:100%;height:6px;background:#333;border-radius:3px;margin-top:6px;overflow:hidden}
+.daily-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4a8,#6cf);transition:width .3s}
+.daily-done .pn{color:#8b8!important}
+.shop-card{background:rgba(30,25,60,.95);border-radius:12px;padding:14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,215,0,.15)}
+.shop-card .si{font-size:28px;margin-right:12px}
+.shop-card .si2{flex:1}
+.shop-card .sn{color:#ffd700;font-size:14px;font-weight:bold}
+.shop-card .sd{color:#999;font-size:11px}
+.shop-card .sbtn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
+.shop-card .sbtn:active{transform:scale(.94)}
+#mcard{background:linear-gradient(135deg,rgba(200,130,60,.2),rgba(160,100,40,.15));border:1px solid rgba(255,180,60,.3);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center}
+#mcard .mt{font-size:18px;color:#fc6;font-weight:bold}
+#mcard .md{color:#bbb;font-size:12px;margin:4px 0}
+#mcard .mb{color:#ffd700;font-size:26px;font-weight:bold;margin:8px 0}
+#mcard .mbtn{padding:10px 30px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
+#mcard .mbtn:active{transform:scale(.94)}
+#mcard.active{border-color:rgba(100,200,100,.4);background:rgba(40,80,40,.2)}
+#mcard.active .mt{color:#8b8}
+#chest-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:200}
+.ccont{text-align:center;animation:popIn .3s ease-out}
+.cchest{font-size:80px;animation:bounce .6s ease-in-out infinite alternate}
+@keyframes bounce{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.1) translateY(-10px)}}
+.cres{color:#ffd700;font-size:22px;font-weight:bold;margin:12px 0}
+.cbtn{padding:12px 36px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5a8,#3a6);margin-top:8px}
+#offline{z-index:70;position:absolute;top:0;left:0;right:0;bottom:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.8)}
+#offline .om{background:linear-gradient(180deg,#1a1a3e,#141435);border-radius:16px;padding:28px;text-align:center;max-width:280px;border:1px solid rgba(255,215,0,.2)}
+#offline .ot{font-size:20px;color:#ffd700;margin-bottom:8px}
+#offline .oe{font-size:32px;color:#ffd700;font-weight:bold;margin:12px 0}
+#offline .obtn{padding:12px 36px;border-radius:10px;font-size:16px;font-weight:bold;border:none;cursor:pointer;margin:6px;color:#fff}
+#offline .obtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
+#offline .obtn.dbl{background:linear-gradient(135deg,#c84,#a63);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,130,60,.4)}50%{box-shadow:0 0 0 12px rgba(200,130,60,0)}}
+.fly{position:absolute;left:50%;transform:translateX(-50%);color:#ffd700;font-size:18px;font-weight:bold;pointer-events:none;animation:flyUp 1.2s forwards;z-index:200}
+@keyframes flyUp{0%{opacity:1;bottom:180px}100%{opacity:0;bottom:320px}}
+</style>
+</head>
+<body>
+<div id="game">
+  <div class="bg"></div>
+  <div id="top"><span id="gld">💰 100</span><span id="gms">💠 5</span></div>
+  <div id="rate">💰 0/s</div>
+  <div id="scroll"></div>
+  <div id="bottom">
+    <button class="bbtn e" id="btexp">🔍 探索</button>
+    <button class="bbtn c" id="btcol">📖 图鉴</button>
+    <button class="bbtn d" id="btach">🏆 成就</button>
+    <button class="bbtn a" id="btad">📺 广告</button>
+    <button class="bbtn s" id="btshop">💎 商城</button>
+    <button class="bbtn t" id="btdaily">📋 每日</button>
+  </div>
+  <div class="overlay" id="ol"><div class="popup">
+    <div class="pt" id="pt"></div><div class="pd" id="pd"></div>
+    <div class="pb"><button class="pbtn ok" id="pok">确认</button><button class="pbtn cancel" id="pca">取消</button></div>
+  </div></div>
+  <div class="panel" id="colpanel"><div class="ptitle">📖 图鉴收集</div><div class="psub" id="cc"></div><div id="clist"></div><div style="text-align:center;padding:20px"><button class="pbtn cancel" id="ccb">关闭</button></div></div>
+  <div class="panel" id="achieve"><div class="ptitle">🏆 成就</div><div id="alist"></div><div style="text-align:center;padding:20px"><button class="pbtn cancel" id="acb">关闭</button></div></div>
+  <div class="panel" id="shoppanel" style="z-index:51"><div class="ptitle">💎 宝石商城</div><div class="psub">当前 💠 <span id="shopgems">5</span></div><div id="mcard"><div class="mt">👑 黄金月卡</div><div class="md">每日领取 💰10万 + 💠3 + 广告自动跳过</div><div class="mb">30元/30天</div><button class="mbtn" id="mcardbtn">购买月卡</button></div><div id="shoplist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="scb">关闭</button></div></div>
+  <div class="panel" id="dailypanel" style="z-index:51"><div class="ptitle">📋 每日任务</div><div id="dlist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="dcb">关闭</button></div></div>
+  <div id="chest-overlay"><div class="ccont"><div class="cchest">🎁</div><div class="cres" id="chestResult"></div><button class="cbtn" id="chestClose">📺 双倍领取</button><button class="cbtn" style="background:#855;margin-top:4px;padding:8px 24px;font-size:13px" id="chestSkip">跳过</button></div></div>
+  <div id="offline"><div class="om"><div class="ot">🌙 你离开了</div><div class="oe" id="oam"></div><div class="ot" id="otm"></div><button class="obtn ok" id="oc1">💰 领取</button><button class="obtn dbl" id="oc2">📺 双倍领取</button></div></div>
+</div>
+<script src="data.js"></script>
+<script>// ==================== 存档 ====================
+let S=JSON.parse(localStorage.getItem('xzd3')||'{"gold":100,"gems":5,"lvs":{},"found":[],"ach":[],"last":0,"daily":{},"today":"","adx2":0,"cardEnd":0,"noads":false}');
+if(!S.last)S.last=Date.now();S.lvs=S.lvs||{};S.found=S.found||[];S.ach=S.ach||[];S.daily=S.daily||{};S.adx2=S.adx2||0;S.cardEnd=S.cardEnd||0;S.noads=S.noads||false;
+BD.forEach(b=>{if(!(b.id in S.lvs))S.lvs[b.id]=0});
+
+// 每日重置
+const today=new Date().toDateString();
+if(S.today!==today){S.today=today;S.daily={};S.adx2=0;}
+DAILY.forEach(d=>{if(!(d.id in S.daily))S.daily[d.id]=0;});
+
+// ==================== 音频 ====================
+let ac=null;
+function initAudio(){if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+function play(f,hz,dur,type,gain){gain=gain||0.08;type=type||'sine';if(!ac)initAudio();if(!ac)return;try{let o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(hz,ac.currentTime);if(f)o.frequency.exponentialRampToValueAtTime(f,ac.currentTime+dur);g.gain.setValueAtTime(gain,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+function sfxClick(){play(0,600,0.08,'sine',0.06);setTimeout(function(){play(0,800,0.06,'sine',0.04)},80);}
+function sfxBuild(){play(0,180,0.15,'triangle',0.1);setTimeout(function(){play(0,360,0.12,'triangle',0.08)},100);setTimeout(function(){play(0,540,0.1,'sine',0.07)},200);}
+function sfxExplore(){play(0,800,0.1,'sine',0.05);setTimeout(function(){play(0,1200,0.08,'sine',0.04)},80);setTimeout(function(){play(0,1600,0.06,'sine',0.03)},160);}
+function sfxGold(){play(0,1200,0.06,'triangle',0.05);setTimeout(function(){play(0,1600,0.04,'triangle',0.04)},50);setTimeout(function(){play(0,2000,0.04,'triangle',0.03)},100);}
+let audioStarted=false;
+document.addEventListener('click',function(){if(!audioStarted){initAudio();audioStarted=true;}},{once:true});
+
+// ==================== 工具函数 ====================
+function save(){S.last=Date.now();localStorage.setItem('xzd3',JSON.stringify(S));}
+function fmt(n){return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':Math.floor(n).toString();}
+function getIncome(){let t=0;BD.forEach(b=>{let l=S.lvs[b.id]||0;if(l>0)t+=b.bi+b.ig*(l-1);});return t;}
+function cost(id){let b=BD.find(x=>x.id===id);let lv=S.lvs[id]||0;return Math.floor(b.bc+b.cg*lv*Math.pow(1.08,lv));}
+function totalLv(){let t=0;BD.forEach(b=>t+=S.lvs[b.id]||0);return t;}
+function fmtTime(s){if(s<60)return Math.floor(s)+'秒';if(s<3600)return Math.floor(s/60)+'分钟';return Math.floor(s/3600)+'小时'+Math.floor(s/60%60)+'分';}
+
+// ==================== UI ====================
+function updateUI(){
+  document.getElementById('gld').textContent='💰 '+fmt(S.gold);
+  document.getElementById('gms').textContent='💠 '+S.gems;
+  document.getElementById('rate').textContent='💰 '+getIncome()+'/s';
+  renderBld();checkAch();
+}
+function renderBld(){
+  document.getElementById('scroll').innerHTML=BD.map(b=>{
+    let lv=S.lvs[b.id]||0,inc=lv>0?b.bi+b.ig*(lv-1):0,isMax=lv>=b.ml;
+    let tier=TIER[b.t],brd=lv>0?('border-color:rgba(255,215,0,'+(.05+lv/b.ml*.2)+')'):'';
+    return '<div class="card'+(lv===0?' lv0':'')+'" style="'+brd+'">'+
+      '<div class="ico">'+(ICONS[b.id]||'🏠')+'</div>'+
+      '<div class="info"><div class="name">'+b.n+' <span style="font-size:10px;color:'+tier.color+'">'+tier.name+'</span></div>'+
+      '<div class="level">'+(lv===0?'未建造':'Lv.'+lv+'/'+b.ml)+'</div>'+
+      '<div class="rate">'+(inc||0)+'/s</div></div>'+
+      (isMax?'<button class="act max" disabled>MAX</button>':'<button class="act build" data-bld="'+b.id+'">'+(lv===0?'建':'升')+fmt(cost(b.id))+'</button>')+
+      '</div>';
+  }).join('');
+}
+
+// ==================== 弹窗 ====================
+let curBld='',isExplore=false;
+function showPopup(t,d){document.getElementById('pt').textContent=t;document.getElementById('pd').textContent=d;document.getElementById('pca').style.display=isExplore?'none':'';document.getElementById('ol').classList.add('show');}
+function hidePopup(){document.getElementById('ol').classList.remove('show');curBld='';isExplore=false;}
+
+// ==================== 建造 ====================
+function showBldPopup(id){
+  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  if(lv===0)showPopup('🏗 '+b.n,'消耗 '+fmt(co)+' 金币\n建造后产出 '+b.bi+'/秒');
+  else{let o=b.bi+b.ig*(lv-1),n=b.bi+b.ig*lv;showPopup('🔧 升级 '+b.n,'Lv.'+lv+' → '+(lv+1)+'\n消耗 '+fmt(co)+' 金币\n'+o+' → '+n+'/秒');}
+}
+function doBuild(id){
+  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  if(lv>=b.ml||S.gold<co)return false;
+  S.gold-=co;S.lvs[id]=lv+1;trackDaily('d2');save();updateUI();
+  sfxBuild();flyText((lv===0?'🏗 建造！':'⬆ Lv.'+(lv+1))+' '+b.n);
+  return true;
+}
+
+// ==================== 探索 ====================
+function doExplore(){
+  trackDaily('d1');sfxClick();
+  let tl=totalLv(),av=IT.filter(i=>i.u<=tl&&!S.found.includes(i.id));
+  if(av.length===0||Math.random()>0.4){flyText('🔍 再接再厉！');S.gold+=Math.max(getIncome(),1)*10;save();updateUI();return;}
+  let ws=av.map(i=>({i:i,w:100/i.r})),tw=ws.reduce(function(s,x){return s+x.w},0),r=Math.random()*tw;
+  for(let w of ws){r-=w.w;if(r<=0){S.found.push(w.i.id);trackDaily('d4');save();isExplore=true;sfxExplore();showPopup('🎉 发现新物品！',w.i.n+' ⭐'.repeat(w.i.r)+'\n'+w.i.d);return;}}
+}
+
+// ==================== 广告 ====================
+function doAd(){let b=Math.max(getIncome(),1)*3600*2;S.gold+=b;save();updateUI();sfxGold();flyText('📺 +'+fmt(b)+' 💰');}
+
+// ==================== 图鉴 ====================
+let colOpen=false;
+function toggleCol(){colOpen=!colOpen;document.getElementById('colpanel').style.display=colOpen?'block':'none';document.getElementById('scroll').style.display=colOpen?'none':'';if(colOpen)renderCol();}
+function renderCol(){
+  let found=0,html='';IT.forEach(c=>{let disc=S.found.includes(c.id);if(disc)found++;
+  html+='<div class="pitem flex'+(disc?' found':' locked')+'"><div class="pi">'+(disc?'⭐'.repeat(Math.min(c.r,4)):'❓')+'</div><div class="ptx"><div class="pn">'+(disc?c.n+' ⭐'.repeat(c.r):'???')+'</div><div class="pd">'+(disc?c.d:'继续探索解锁')+'</div></div></div>';});
+  document.getElementById('clist').innerHTML=html;document.getElementById('cc').textContent='已收集:'+found+'/'+IT.length;
+}
+
+// ==================== 成就 ====================
+let achOpen=false;
+function toggleAch(){achOpen=!achOpen;document.getElementById('achieve').style.display=achOpen?'block':'none';document.getElementById('scroll').style.display=achOpen?'none':'';if(achOpen)renderAch();}
+function renderAch(){
+  document.getElementById('alist').innerHTML=ACH.map(a=>{
+    let done=S.ach.includes(a.id),ok=aCheck(a);
+    return '<div class="pitem flex'+(done?' found':'')+'"><div class="pi">'+a.icon+'</div><div class="ptx"><div class="pn">'+a.n+'</div><div class="pd">'+a.d+'</div></div><div class="pr">'+(done?'✅ 已达成':ok?'🔓 可领取':'🔒')+'</div></div>';
+  }).join('');
+}
+function aCheck(a){
+  if(a.id==='a1')return Object.values(S.lvs).some(v=>v>0);
+  if(a.id==='a2')return S.gold>=1000;
+  if(a.id==='a3')return totalLv()>=20;
+  if(a.id==='a4')return S.found.length>=5;
+  if(a.id==='a5')return S.gold>=1e6;
+  if(a.id==='a6')return S.found.length>=12;
+  if(a.id==='a7')return (S.lvs['dragon']||0)>0;
+  if(a.id==='a8')return (S.lvs['castle']||0)>0;
+  return false;
+}
+function checkAch(){
+  let changed=false;
+  ACH.forEach(a=>{if(!S.ach.includes(a.id)&&aCheck(a)){S.ach.push(a.id);changed=true;sfxGold();flyText('🏆 '+a.n+' 达成！');}});
+  if(changed)save();
+}
+
+// ==================== 每日任务 ====================
+function trackDaily(id){S.daily[id]=(S.daily[id]||0)+1;save();}
+let dailyOpen=false;
+function toggleDaily(){dailyOpen=!dailyOpen;document.getElementById('dailypanel').style.display=dailyOpen?'block':'none';document.getElementById('scroll').style.display=dailyOpen?'none':'';if(dailyOpen)renderDaily();}
+function renderDaily(){
+  document.getElementById('dlist').innerHTML=DAILY.map(d=>{
+    let curr=S.daily[d.id]||0,pct=Math.min(100,Math.floor(curr/d.need*100)),done=curr>=d.need;
+    return '<div class="pitem flex'+(done?' daily-done':'')+'"><div class="pi">'+d.icon+'</div><div class="ptx"><div class="pn">'+d.n+'</div><div class="pd">'+curr+'/'+d.need+'</div><div class="daily-bar"><div class="daily-fill" style="width:'+pct+'%"></div></div></div><div class="pr">'+(done?'✅':'💠 +'+d.reward)+'</div></div>';
+  }).join('');
+}
+
+// ==================== 商城 ====================
+let shopOpen=false;
+function toggleShop(){shopOpen=!shopOpen;document.getElementById('shoppanel').style.display=shopOpen?'block':'none';document.getElementById('scroll').style.display=shopOpen?'none':'';if(shopOpen)updateShop();}
+function updateShop(){
+  document.getElementById('shopgems').textContent=S.gems;
+  let ca=(S.cardEnd||0)>Date.now();
+  document.getElementById('mcard').className=ca?'active':'';
+  document.getElementById('mcardbtn').textContent=ca?'月卡有效 ('+Math.ceil((S.cardEnd-Date.now())/86400000)+'天)':'购买月卡';
+  document.getElementById('mcardbtn').onclick=ca?null:buyCard;
+  document.getElementById('shoplist').innerHTML=SHOP.map(s=>'<div class="shop-card"><div class="si">💎</div><div class="si2"><div class="sn">'+s.n+'</div><div class="sd">'+s.d+'</div></div><button class="sbtn" data-shop="'+s.id+'">'+s.price+'</button></div>').join('');
+}
+function buyCard(){if((S.cardEnd||0)>Date.now()){flyText('👑 月卡仍在有效期内');return;}S.cardEnd=Date.now()+30*86400000;S.gems+=3;save();sfxGold();flyText('👑 月卡已激活！30天');updateShop();}
+function buyShop(id){let s=SHOP.find(x=>x.id===id);if(!s)return;if(s.adfree){S.noads=true;save();sfxGold();flyText('🚫 广告已移除！');updateShop();return;}if(s.gold)S.gold+=s.gold;if(s.gems)S.gems+=s.gems;save();sfxGold();flyText('💎 +'+s.gems+' 💰 +'+fmt(s.gold));updateShop();updateUI();}
+
+// ==================== 宝箱 ====================
+let chestAmt=0,chestX2=false;
+function openChest(amt,x2){chestAmt=amt;chestX2=x2;initAudio();document.getElementById('chestResult').textContent=fmt(amt)+' 💰';document.getElementById('chestSkip').style.display=x2?'none':'';document.getElementById('chest-overlay').style.display='flex';play(0,300,0.6,'sine',0.06);setTimeout(function(){play(0,600,0.4,'sine',0.05)},300);setTimeout(function(){play(0,900,0.3,'sine',0.04)},600);}
+function closeChest(){document.getElementById('chest-overlay').style.display='none';}
+function claimChest(){if(chestX2){S.gold+=chestAmt}else{S.gold+=chestAmt*2};save();updateUI();sfxGold();closeChest();}
+function claimChestSkip(){S.gold+=chestAmt;save();updateUI();sfxGold();closeChest();}
+
+// ==================== 离线收益 ====================
+let offAmt=0,offDt=0;
+(function(){offDt=(Date.now()-S.last)/1000;if(offDt>10){let inc=getIncome();offAmt=Math.floor(Math.min(offDt,86400)*inc);if(offAmt>0)showOffline(offAmt);}S.last=Date.now();save();})();
+function showOffline(amt){document.getElementById('oam').textContent='+'+fmt(amt)+' 💰';document.getElementById('otm').textContent='离线 '+fmtTime(offDt);document.getElementById('offline').style.display='flex';}
+function claimOffline(){S.gold+=offAmt;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0;}
+function claimOfflineDouble(){S.gold+=offAmt*2;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0;flyText('📺 双倍！');}
+
+// ==================== 飘字特效 ====================
+function flyText(t){let el=document.createElement('div');el.className='fly';el.textContent=t;document.getElementById('game').appendChild(el);setTimeout(function(){el.remove();},1300);}
+
+// ==================== 事件代理 ====================
+document.getElementById('game').addEventListener('click',function(e){
+  let t=e.target;
+  if(t.classList.contains('build')){let id=t.dataset.bld;curBld=id;isExplore=false;sfxClick();showBldPopup(id);return;}
+  if(t.id==='pok'){if(isExplore){hidePopup();return;}if(!curBld||doBuild(curBld)){hidePopup();}sfxClick();return;}
+  if(t.id==='pca'){hidePopup();sfxClick();return;}
+  if(t.id==='btexp'){doExplore();return;}
+  if(t.id==='btcol'){sfxClick();toggleCol();return;}
+  if(t.id==='btach'){sfxClick();toggleAch();return;}
+  if(t.id==='btad'){doAd();return;}
+  if(t.id==='btshop'){sfxClick();toggleShop();return;}
+  if(t.id==='btdaily'){sfxClick();toggleDaily();return;}
+  if(t.id==='ccb'){toggleCol();return;}
+  if(t.id==='acb'){toggleAch();return;}
+  if(t.id==='scb'){toggleShop();return;}
+  if(t.id==='dcb'){toggleDaily();return;}
+  if(t.classList.contains('sbtn')){buyShop(t.dataset.shop);return;}
+  if(t.id==='chestClose'){claimChest();return;}
+  if(t.id==='chestSkip'){claimChestSkip();return;}
+  if(t.id==='oc1'){claimOffline();return;}
+  if(t.id==='oc2'){claimOfflineDouble();return;}
+});
+document.getElementById('ol').addEventListener('click',function(e){if(e.target===this)hidePopup();});
+
+// ==================== 初始化 ====================
+updateUI();
+setInterval(function(){S.gold+=getIncome();save();document.getElementById('gld').textContent='💰 '+fmt(S.gold);},1000);
+console.log('熊爪小岛 完整版 ✅ 音效|商城|月卡|宝箱|每日任务');
+</script>
+</body>
+</html>

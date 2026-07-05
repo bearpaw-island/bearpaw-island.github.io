@@ -1,0 +1,5 @@
+﻿miniprogram/
+minigame/
+fix_icons.py
+build.py
+*.tmp
