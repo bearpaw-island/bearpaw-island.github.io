@@ -1,127 +1,441 @@
-﻿<style>
-/* ========== 建筑场景面板 ========== */
-.bscene { position:absolute; top:0; left:0; right:0; bottom:0; z-index:60; display:none; flex-direction:column; }
-.bscene.show { display:flex; }
-.bscene-hdr { display:flex; align-items:center; padding:12px 14px; background:rgba(10,10,20,.92); border-bottom:1px solid rgba(255,255,255,.06); gap:10px; z-index:2; }
-.bscene-hdr .back { padding:6px 14px; border-radius:8px; font-size:14px; cursor:pointer; border:none; color:#ccc; background:rgba(255,255,255,.08); }
-.bscene-hdr .back:active { background:rgba(255,255,255,.15); }
-.bscene-hdr .btitle { flex:1; font-size:16px; font-weight:700; color:#ffd700; text-align:center; }
-.bscene-bg { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
-.bscene-stats { padding:8px 14px; background:rgba(10,10,20,.9); display:flex; justify-content:space-around; font-size:12px; color:#aaa; border-top:1px solid rgba(255,255,255,.05); }
-.bscene-stats .ss { text-align:center; }
-.bscene-stats .ss .sv { font-size:16px; font-weight:700; }
-.bscene-stats .ss .sv.gold { color:#ffd700; }
-.bscene-stats .ss .sv.green { color:#6a6; }
-.bscene-game { min-height:180px; padding:12px 14px; background:rgba(10,10,20,.95); position:relative; overflow:hidden; }
-.bscene-game .gm-title { text-align:center; color:#ffd700; font-size:14px; font-weight:700; margin-bottom:8px; }
-.bscene-game .gm-info { text-align:center; color:#888; font-size:10px; margin-bottom:10px; }
-.bscene-upgrade { padding:10px 14px; background:rgba(10,10,20,.9); border-top:1px solid rgba(255,255,255,.05); display:flex; align-items:center; justify-content:space-between; }
-.bscene-upgrade .uinfo { color:#aaa; font-size:11px; }
-.bscene-upgrade .ubtn { padding:10px 20px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; border:none; color:#fff; background:linear-gradient(135deg,#5b8,#3a6); }
-.bscene-upgrade .ubtn:active { transform:scale(.94); }
-.bscene-upgrade .ubtn.max { background:#222; color:#555; cursor:default; }
+<style>
+/* ========== 场景面板通用 ========== */
+.bscene{position:absolute;top:0;left:0;right:0;bottom:0;z-index:60;display:none;flex-direction:column;background:#000}
+.bscene.show{display:flex}
+.bscene-hdr{display:flex;align-items:center;padding:8px 14px;background:rgba(0,0,0,.85);gap:10px;z-index:10;min-height:40px}
+.bscene-hdr .back{padding:4px 12px;border-radius:6px;font-size:13px;cursor:pointer;border:none;color:#bbb;background:rgba(255,255,255,.1)}
+.bscene-hdr .back:active{background:rgba(255,255,255,.2)}
+.bscene-hdr .btitle{flex:1;font-size:15px;font-weight:700;color:#ffd700;text-align:center;text-shadow:0 0 10px rgba(255,215,0,.3)}
+.bscene-body{flex:1;position:relative;overflow:hidden}
+.bscene-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(0,0,0,.85);z-index:10;min-height:44px;border-top:1px solid rgba(255,255,255,.08)}
+.bscene-foot .uinfo{color:#aaa;font-size:11px;line-height:1.4}
+.bscene-foot .uinfo b{color:#ffd700}
+.bscene-foot .ubtn{padding:8px 18px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5b8,#3a6);white-space:nowrap}
+.bscene-foot .ubtn:active{transform:scale(.94)}
+.bscene-foot .ubtn.max{background:#222;color:#555;cursor:default}
+.bscene-overlay{position:absolute;bottom:0;left:0;right:0;padding:10px 14px 8px;background:linear-gradient(0deg,rgba(0,0,0,.92),rgba(0,0,0,.6),transparent);z-index:5;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bscene-overlay .scene-stats{display:flex;gap:16px;font-size:11px;color:#aaa}
+.bscene-overlay .scene-stats span{color:#ffd700;font-weight:700}
 
-/* ===== 浆果树场景 ===== */
-#scene-tree .bscene-bg { background:linear-gradient(180deg,#1a3a1a,#0d2d0d,#1a1a0a); }
-#scene-tree .bscene-bg::before { content:'🌳\00a0\00a0🌳\00a0\00a0🌳'; font-size:40px; position:absolute; top:30%; }
-#scene-tree .bscene-bg::after { content:''; position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(0deg,rgba(30,60,10,.6),transparent); }
-.tree-fruit { position:absolute; font-size:24px; animation:fruitDrop 2.5s linear forwards; pointer-events:auto; cursor:pointer; z-index:10; }
-@keyframes fruitDrop { 0%{top:-40px;} 90%{top:calc(100% - 50px); opacity:1;} 100%{top:100%; opacity:0;} }
-.tree-fruit:active { transform:scale(1.3); }
+/* ========== 通用按钮 ========== */
+.scene-play-btn{padding:10px 30px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63);box-shadow:0 2px 12px rgba(200,130,40,.3)}
+.scene-play-btn:active{transform:scale(.94)}
+.scene-play-btn.mini{padding:6px 16px;font-size:12px;background:linear-gradient(135deg,#5b8,#3a6)}
+.result-block{text-align:center;padding:8px}
+.result-block .rscore{font-size:28px;color:#ffd700;font-weight:700}
+.result-block .rgold{font-size:16px;color:#6a6;margin-top:2px}
 
-/* ===== 矿场场景 ===== */
-#scene-mine .bscene-bg { background:linear-gradient(180deg,#2a1a0a,#1a1008,#0a0808); }
-#scene-mine .bscene-bg::before { content:'⛰️'; font-size:60px; position:absolute; top:20%; left:10%; }
-#scene-mine .bscene-bg::after { content:'⛰️'; font-size:45px; position:absolute; top:30%; right:15%; }
-.mine-rock { position:absolute; font-size:28px; cursor:pointer; animation:rockShake 1.5s ease-in-out infinite; pointer-events:auto; }
-@keyframes rockShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-2px);} 75%{transform:translateX(2px);} }
+/* ================================================================
+   1. 浆果树 - 果园
+   天空(蓝渐变)+山丘+草地+苹果树+果实掉落动画
+   ================================================================ */
+#scene-tree .bscene-body{
+  background:linear-gradient(180deg,#87ceeb 0%,#b5e8f7 30%,#e8f5e9 55%,#4a8c3f 65%,#3d6e32 70%,#5c8a3f 100%);
+  overflow:hidden;
+}
+/* 云朵 */
+#scene-tree .bscene-body::before{
+  content:'';position:absolute;width:60px;height:22px;background:#fff;border-radius:20px;
+  top:12%;left:15%;opacity:.9;box-shadow:20px -8px 0 8px #fff,40px 0 0 4px #fff;
+  animation:cloudDrift 8s ease-in-out infinite;
+}
+@keyframes cloudDrift{0%,100%{transform:translateX(0)}50%{transform:translateX(20px)}}
+/* 山丘 */
+#scene-tree .bscene-body::after{
+  content:'';position:absolute;bottom:35%;left:-10%;width:120%;height:35%;
+  background:linear-gradient(180deg,#6a9e4a 0%,#4a7a30 100%);
+  border-radius:50% 50% 0 0;
+}
+/* 树干+树冠 — 用JS动态生成多个树 */
+.scene-tree-trunk{
+  position:absolute;bottom:35%;width:14px;
+  background:linear-gradient(90deg,#6b4226,#8b5a2b,#6b4226);border-radius:3px 3px 0 0;
+}
+.scene-tree-crown{
+  position:absolute;width:0;height:0;border-left:30px solid transparent;
+  border-right:30px solid transparent;border-bottom:50px solid;
+}
+.scene-tree-crown.c1{border-bottom-color:#2d6a1e}
+.scene-tree-crown.c2{border-bottom-color:#3d8b2e}
+.scene-tree-crown.c3{border-bottom-color:#4a9a3a}
+/* 果实 */
+.scene-fruit{
+  position:absolute;width:12px;height:12px;border-radius:50%;cursor:pointer;
+  z-index:3;animation:fruitBounce 2s ease-in-out infinite;
+}
+.scene-fruit:active{transform:scale(1.4) !important}
+@keyframes fruitBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+/* 草地纹理 */
+.scene-grass{
+  position:absolute;bottom:30%;left:0;right:0;height:8%;
+  background:linear-gradient(180deg,#5c8a3f,#6a9e4a);
+  border-radius:40% 40% 0 0;
+}
 
-/* ===== 农田场景 ===== */
-#scene-farm .bscene-bg { background:linear-gradient(180deg,#4a8,#3a6,#6a4); }
-#scene-farm .bscene-bg::before { content:'🌾\00a0🌾\00a0🌾\00a0🌾\00a0🌾'; font-size:28px; position:absolute; top:25%; letter-spacing:4px; }
-#scene-farm .bscene-bg::after { content:'☀️'; font-size:40px; position:absolute; top:8%; right:12%; animation:sunBounce 2s ease-in-out infinite; }
-@keyframes sunBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
-.water-bar-bg { width:100%; height:20px; background:#333; border-radius:10px; overflow:hidden; margin:8px 0; }
-.water-bar-fill { height:100%; background:linear-gradient(90deg,#4af,#6cf); border-radius:10px; transition:width .3s; }
-.water-zone { position:absolute; width:40px; height:24px; border:2px solid #ffd700; border-radius:6px; top:50%; transition:left .6s; pointer-events:none; }
+/* ================================================================
+   2. 矿场 - 矿洞
+   暗色洞穴+钟乳石+矿车轨道+宝石光点
+   ================================================================ */
+#scene-mine .bscene-body{
+  background:linear-gradient(180deg,#1a1a1a 0%,#2a1a0a 20%,#1a1008 50%,#0a0808 100%);
+  overflow:hidden;
+}
+/* 钟乳石 */
+#scene-mine .bscene-body::before{
+  content:'';position:absolute;top:0;left:5%;width:20px;height:50px;
+  background:linear-gradient(180deg,#4a3a2a,#3a2a1a);clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);
+  box-shadow:30px 0 0 #3a2a2a,60px 0 0 #4a3a3a,120px 0 0 #3a2a2a,180px -10px 0 8px #4a3a3a;
+}
+/* 地面 */
+#scene-mine .bscene-body::after{
+  content:'';position:absolute;bottom:20%;left:0;right:0;height:20%;
+  background:linear-gradient(180deg,#3a2a1a,#2a1a0a);
+}
+/* 宝石光斑 */
+.scene-gem-glow{
+  position:absolute;width:6px;height:6px;background:#ffd700;border-radius:50%;
+  box-shadow:0 0 8px 2px #ffd700;animation:gemPulse 2s ease-in-out infinite;
+}
+@keyframes gemPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.5)}}
+/* 轨道 */
+.scene-rail{
+  position:absolute;bottom:24%;left:0;right:0;height:6px;
+  background:repeating-linear-gradient(90deg,#5a4a3a 0,#5a4a3a 12px,#3a2a1a 12px,#3a2a1a 14px);
+}
+/* 矿车 */
+.scene-cart{
+  position:absolute;bottom:25%;width:30px;height:18px;background:#6a5a4a;
+  border-radius:3px;border:2px solid #5a4a3a;
+}
+/* 可敲矿石 */
+.scene-rock{
+  position:absolute;width:24px;height:18px;background:linear-gradient(135deg,#666,#444);
+  border-radius:40% 50% 30% 45%;cursor:pointer;z-index:3;
+  animation:rockFloat 2s ease-in-out infinite;
+}
+.scene-rock:active{transform:scale(.7) !important;opacity:.3}
+@keyframes rockFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
 
-/* ===== 渔场场景 ===== */
-#scene-fish .bscene-bg { background:linear-gradient(180deg,#1a4a6a,#0a2a4a,#0a1a2a); }
-#scene-fish .bscene-bg::before { content:'🌊'; font-size:30px; position:absolute; bottom:10%; left:5%; animation:waveMove 3s ease-in-out infinite; }
-#scene-fish .bscene-bg::after { content:'🌊'; font-size:25px; position:absolute; bottom:8%; right:10%; animation:waveMove 2.5s ease-in-out infinite .5s; }
-@keyframes waveMove { 0%,100%{transform:translateX(0);} 50%{transform:translateX(10px);} }
-.fish-swim { font-size:28px; position:absolute; left:-40px; animation:swimAcross 4s linear forwards; }
-@keyframes swimAcross { to{left:105%;} }
-.fish-hook { position:absolute; bottom:20%; left:50%; transform:translateX(-50%); font-size:30px; }
+/* ================================================================
+   3. 农田 - 农场
+   天空+太阳+麦田+风车远景+水渠
+   ================================================================ */
+#scene-farm .bscene-body{
+  background:linear-gradient(180deg,#4a90d9 0%,#87ceeb 25%,#b5d8a0 55%,#8ab860 70%,#6a9e4a 100%);
+  overflow:hidden;
+}
+/* 太阳 */
+#scene-farm .bscene-body::before{
+  content:'';position:absolute;width:36px;height:36px;background:radial-gradient(#ffe,#fc6);
+  border-radius:50%;top:8%;right:12%;box-shadow:0 0 20px 4px rgba(255,200,80,.4);
+  animation:sunGlow 3s ease-in-out infinite;
+}
+@keyframes sunGlow{0%,100%{box-shadow:0 0 20px 4px rgba(255,200,80,.4)}50%{box-shadow:0 0 30px 8px rgba(255,200,80,.6)}}
+/* 地面 */
+#scene-farm .bscene-body::after{
+  content:'';position:absolute;bottom:25%;left:0;right:0;height:30%;
+  background:linear-gradient(180deg,#8ab860,#6a9e4a 30%,#7a8e3a 60%,#5a7a2a);
+}
+/* 麦穗行 */
+.scene-wheat{position:absolute;bottom:25%;font-size:18px;z-index:2;animation:wheatSway 3s ease-in-out infinite}
+@keyframes wheatSway{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
+/* 风车 */
+.scene-windmill{
+  position:absolute;width:8px;height:40px;background:#c8b8a0;border-radius:2px;
+}
+.scene-windmill-blades{
+  position:absolute;width:3px;height:28px;background:#999;
+  transform-origin:bottom center;animation:bladeSpin 3s linear infinite;
+}
+@keyframes bladeSpin{to{transform:rotate(360deg)}}
+/* 水渠 */
+.scene-canal{
+  position:absolute;bottom:26%;left:10%;width:80%;height:8px;
+  background:linear-gradient(90deg,#4a8,#6af,#4a8);border-radius:4px;
+}
 
-/* ===== 磨坊场景 ===== */
-#scene-mill .bscene-bg { background:linear-gradient(180deg,#6b5,#5a4,#48483a); }
-#scene-mill .bscene-bg::before { content:''; position:absolute; width:50px; height:90px; background:linear-gradient(180deg,#c8b898,#a89878); border-radius:4px; top:30%; left:calc(50% - 25px); }
-#scene-mill .bscene-bg::after { content:''; position:absolute; width:8px; height:50px; background:#8a7a5a; top:25%; left:50%; border-radius:2px; transform-origin:bottom center; animation:millSpin 2s linear infinite paused; }
-#scene-mill .bscene-bg.spinning::after { animation-play-state:running; }
-@keyframes millSpin { to{transform:rotate(360deg);} }
+/* ================================================================
+   4. 渔场 - 海洋
+   海天一色+海浪+渔船+水下鱼群+海滩
+   ================================================================ */
+#scene-fish .bscene-body{
+  background:linear-gradient(180deg,#4a90d9 0%,#87ceeb 20%,#3a8ab5 45%,#1a5a7a 65%,#0a4a6a 100%);
+  overflow:hidden;
+}
+/* 云 */
+#scene-fish .bscene-body::before{
+  content:'';position:absolute;width:50px;height:16px;background:#fff;border-radius:16px;
+  top:8%;left:20%;opacity:.8;box-shadow:60px -5px 0 6px #fff,100px 3px 0 4px #fff;
+}
+/* 海平面波浪 */
+#scene-fish .bscene-body::after{
+  content:'';position:absolute;top:45%;left:0;right:0;height:30px;
+  background:linear-gradient(180deg,rgba(30,100,160,.6),rgba(20,80,140,.4));
+  border-radius:0;animation:seaWave 4s ease-in-out infinite;
+}
+@keyframes seaWave{0%,100%{transform:translateY(0) scaleY(1)}50%{transform:translateY(-6px) scaleY(1.3)}}
+/* 沙滩 */
+.scene-beach{
+  position:absolute;bottom:0;left:0;right:0;height:20%;
+  background:linear-gradient(180deg,#e8d5a0,#d4c090,#c8b880);
+}
+/* 渔船 */
+.scene-boat{
+  position:absolute;width:36px;height:12px;background:#8b4513;
+  border-radius:4px 4px 0 0;animation:boatRock 3s ease-in-out infinite;
+}
+@keyframes boatRock{0%,100%{transform:rotate(-2deg)}50%{transform:rotate(2deg)}}
+/* 鱼 */
+.scene-fish-swim{
+  position:absolute;z-index:2;animation:fishSwim 5s linear infinite;
+}
+@keyframes fishSwim{0%{left:-40px}100%{left:110%}}
+/* 钓竿 */
+.scene-rod{
+  position:absolute;width:3px;height:50px;background:#8b6914;z-index:3;
+  transform-origin:top center;animation:rodBob 2s ease-in-out infinite;
+}
+@keyframes rodBob{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
 
-/* ===== 酒馆场景 ===== */
-#scene-bar .bscene-bg { background:linear-gradient(180deg,#5a3a1a,#3a2010,#1a1008); }
-#scene-bar .bscene-bg::before { content:'🏮\00a0\00a0🍺\00a0\00a0🏮'; font-size:30px; position:absolute; top:15%; }
-#scene-bar .bscene-bg::after { content:''; position:absolute; bottom:0; left:0; right:0; height:30%; background:linear-gradient(0deg,rgba(80,40,10,.4),transparent); }
-.customer-order { font-size:24px; padding:8px 16px; background:rgba(0,0,0,.4); border-radius:10px; color:#fc6; font-weight:700; margin:4px 0; }
+/* ================================================================
+   5. 磨坊 - 风车磨坊
+   丘陵+大风车+麦田+磨盘
+   ================================================================ */
+#scene-mill .bscene-body{
+  background:linear-gradient(180deg,#87ceeb,#b5d8a0 50%,#7ab860 65%,#5a8a3a 100%);
+  overflow:hidden;
+}
+/* 磨坊建筑 */
+#scene-mill .bscene-body::before{
+  content:'';position:absolute;width:50px;height:60px;background:linear-gradient(180deg,#d4c4a8,#c8b898,#b0a080);
+  bottom:25%;left:50%;transform:translateX(-50%);border-radius:4px;
+  box-shadow:0 0 0 2px #a09878;
+}
+/* 风车叶片 */
+#scene-mill .bscene-body::after{
+  content:'';position:absolute;width:4px;height:36px;background:#999;
+  bottom:calc(25% + 54px);left:50%;transform:translateX(-50%);
+  transform-origin:bottom center;animation:millSpin 3s linear infinite;
+  box-shadow:0 0 0 2px #aaa;
+}
+@keyframes millSpin{to{transform:translateX(-50%) rotate(360deg)}}
 
-/* ===== 神殿场景 ===== */
-#scene-temple .bscene-bg { background:linear-gradient(180deg,#4a3a1a,#3a2a0a,#1a1008); }
-#scene-temple .bscene-bg::before { content:'🏛️'; font-size:55px; position:absolute; top:20%; }
-#scene-temple .bscene-bg::after { content:'✨'; font-size:20px; position:absolute; top:25%; animation:sparkle 1s ease-in-out infinite; }
-@keyframes sparkle { 0%,100%{opacity:.3; transform:scale(.8);} 50%{opacity:1; transform:scale(1.1);} }
-.pray-bar-bg { width:100%; height:14px; background:#222; border-radius:7px; overflow:hidden; margin:10px 0; }
-.pray-bar-fill { height:100%; background:linear-gradient(90deg,#c84,#fc6,#ffd700); border-radius:7px; transition:width .05s linear; }
+/* ================================================================
+   6. 小酒馆 - 酒馆内部
+   暖色+吧台+灯笼+木桌
+   ================================================================ */
+#scene-bar .bscene-body{
+  background:linear-gradient(180deg,#3a1a0a,#5a3a1a 40%,#4a2a10 60%,#3a1a08 100%);
+  overflow:hidden;
+}
+/* 墙面纹理 */
+#scene-bar .bscene-body::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:60%;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,.1) 0,rgba(0,0,0,.1) 4px,transparent 4px,transparent 8px);
+}
+/* 吧台 */
+#scene-bar .bscene-body::after{
+  content:'';position:absolute;bottom:25%;left:10%;width:80%;height:16px;
+  background:linear-gradient(180deg,#8b6914,#6b4910);border-radius:4px;
+}
+/* 灯笼 */
+.scene-lantern{
+  position:absolute;width:16px;height:20px;background:radial-gradient(#fc6,#c60);
+  border-radius:50%;animation:lanternSwing 2s ease-in-out infinite;
+}
+@keyframes lanternSwing{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+/* 酒桶 */
+.scene-barrel{
+  position:absolute;width:20px;height:24px;background:linear-gradient(90deg,#6b4226,#8b5a2b,#6b4226);
+  border-radius:3px;
+}
 
-/* ===== 铁匠铺场景 ===== */
-#scene-forge .bscene-bg { background:linear-gradient(180deg,#4a1a0a,#2a1008,#0a0808); }
-#scene-forge .bscene-bg::before { content:'🔥'; font-size:35px; position:absolute; top:35%; animation:fireFlicker .3s ease-in-out infinite; }
-@keyframes fireFlicker { 0%,100%{transform:scaleY(1); opacity:1;} 50%{transform:scaleY(.85); opacity:.8;} }
-.hammer-swing { position:absolute; width:20px; height:6px; background:#ccc; border-radius:3px; top:40%; transition:right .5s cubic-bezier(.3,.7,.7,.3); }
+/* ================================================================
+   7. 神殿 - 山巅神殿
+   山顶+云雾+神殿柱廊+金色光柱
+   ================================================================ */
+#scene-temple .bscene-body{
+  background:linear-gradient(180deg,#1a2a4a,#2a3a5a 30%,#3a4a6a 50%,#5a4a3a 70%,#4a3a2a 100%);
+  overflow:hidden;
+}
+/* 星光 */
+#scene-temple .bscene-body::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:50%;
+  background:radial-gradient(1px 1px at 15% 10%,#fff3,transparent),
+    radial-gradient(1px 1px at 30% 5%,#fff2,transparent),
+    radial-gradient(1.5px 1.5px at 55% 15%,#fff4,transparent),
+    radial-gradient(1px 1px at 70% 8%,#fff2,transparent),
+    radial-gradient(1px 1px at 85% 20%,#fff3,transparent);
+}
+/* 山体 */
+#scene-temple .bscene-body::after{
+  content:'';position:absolute;bottom:20%;left:-10%;width:120%;height:40%;
+  background:linear-gradient(180deg,#5a4a3a,#4a3a2a,#3a2a1a);
+  clip-path:polygon(20% 0,80% 0,100% 100%,0 100%);
+}
+/* 光芒 */
+.scene-holy-light{
+  position:absolute;width:4px;height:60px;
+  background:linear-gradient(180deg,rgba(255,215,0,.8),transparent);
+  animation:holyShine 2s ease-in-out infinite;
+  transform-origin:top center;
+}
+@keyframes holyShine{0%,100%{opacity:.3}50%{opacity:.8}}
 
-/* ===== 法师塔场景 ===== */
-#scene-wizard .bscene-bg { background:linear-gradient(180deg,#1a1a3a,#2a1a4a,#0a0a1a); }
-#scene-wizard .bscene-bg::before { content:'🔮'; font-size:40px; position:absolute; top:25%; animation:wizFloat 2s ease-in-out infinite; }
-@keyframes wizFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
-.spell-circle { position:absolute; width:36px; height:36px; border-radius:50%; border:2px solid rgba(150,120,220,.6); cursor:pointer; pointer-events:auto; }
-.spell-circle::after { content:''; display:block; width:8px; height:8px; background:#c9f; border-radius:50%; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
-.spell-line { position:absolute; height:2px; background:rgba(150,120,220,.4); transform-origin:left center; pointer-events:none; }
+/* ================================================================
+   8. 铁匠铺 - 熔炉锻造
+   暗红+熔炉+铁砧+火花
+   ================================================================ */
+#scene-forge .bscene-body{
+  background:linear-gradient(180deg,#1a0808,#3a1208 30%,#2a0a08 60%,#1a0808 100%);
+  overflow:hidden;
+}
+/* 熔炉光晕 */
+#scene-forge .bscene-body::before{
+  content:'';position:absolute;width:80px;height:80px;
+  background:radial-gradient(rgba(255,100,20,.3),rgba(200,40,10,.15),transparent);
+  border-radius:50%;top:20%;left:50%;transform:translateX(-50%);
+  animation:forgeGlow 1s ease-in-out infinite;
+}
+@keyframes forgeGlow{0%,100%{transform:translateX(-50%) scale(1);opacity:.8}50%{transform:translateX(-50%) scale(1.15);opacity:1}}
+/* 铁砧 */
+#scene-forge .bscene-body::after{
+  content:'';position:absolute;bottom:30%;left:50%;transform:translateX(-50%);
+  width:40px;height:16px;background:linear-gradient(180deg,#555,#333);
+  border-radius:3px 3px 0 0;
+}
+/* 火花 */
+.scene-spark{
+  position:absolute;width:3px;height:3px;background:#fc0;border-radius:50%;
+  animation:sparkFly 1s ease-out infinite;
+}
+@keyframes sparkFly{0%{transform:translate(0,0) scale(1);opacity:1}100%{transform:translate(calc(var(--dx)*1px),-30px) scale(0);opacity:0}}
 
-/* ===== 贸易中心场景 ===== */
-#scene-market .bscene-bg { background:linear-gradient(180deg,#4a3a2a,#3a2a1a,#2a1a0a); }
-#scene-market .bscene-bg::before { content:'🏪\00a0🏬\00a0🏛️'; font-size:28px; position:absolute; top:20%; letter-spacing:8px; }
-.trade-price { font-size:28px; font-weight:700; transition:color .3s; }
-.trade-price.up { color:#5b8; }
-.trade-price.down { color:#e55; }
+/* ================================================================
+   9. 法师塔 - 魔法高塔
+   紫色夜空+塔楼+魔法阵+漂浮符文
+   ================================================================ */
+#scene-wizard .bscene-body{
+  background:linear-gradient(180deg,#0a0a1a,#1a0a2a 30%,#2a1a3a 60%,#1a0a2a 100%);
+  overflow:hidden;
+}
+/* 塔楼 */
+#scene-wizard .bscene-body::before{
+  content:'';position:absolute;bottom:25%;left:50%;transform:translateX(-50%);
+  width:28px;height:70px;background:linear-gradient(180deg,#4a3a5a,#3a2a4a);
+  clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);
+}
+/* 魔法阵光环 */
+#scene-wizard .bscene-body::after{
+  content:'';position:absolute;width:60px;height:60px;
+  border:2px solid rgba(150,100,220,.4);border-radius:50%;
+  top:25%;left:50%;transform:translateX(-50%);
+  animation:magicCircle 4s linear infinite;
+}
+@keyframes magicCircle{to{transform:translateX(-50%) rotate(360deg)}}
+/* 符文粒子 */
+.scene-rune{
+  position:absolute;font-size:14px;color:#b9f;animation:runeFloat 3s ease-in-out infinite;
+  opacity:.6;
+}
+@keyframes runeFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 
-/* ===== 龙巢场景 ===== */
-#scene-dragon .bscene-bg { background:linear-gradient(180deg,#5a1a0a,#3a1008,#1a0808); }
-#scene-dragon .bscene-bg::before { content:'🌋'; font-size:50px; position:absolute; top:15%; }
-#scene-dragon .bscene-bg::after { content:'🐉'; font-size:45px; position:absolute; top:40%; animation:dragonFloat 3s ease-in-out infinite; }
-@keyframes dragonFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
-.dragon-mouth { position:absolute; font-size:20px; top:55%; left:50%; transform:translateX(-50%); transition:transform .25s; }
-.dragon-mouth.open { transform:translateX(-50%) scaleY(1.5); }
-.dragon-food { position:absolute; font-size:28px; transition:all .3s ease-out; }
+/* ================================================================
+   10. 贸易中心 - 市场广场
+   阳光+广场+摊位+人流
+   ================================================================ */
+#scene-market .bscene-body{
+  background:linear-gradient(180deg,#87ceeb,#b5d8a0 40%,#d4c8a0 55%,#c8b890 70%,#b8a880 100%);
+  overflow:hidden;
+}
+/* 广场地面 */
+#scene-market .bscene-body::before{
+  content:'';position:absolute;bottom:25%;left:0;right:0;height:30%;
+  background:linear-gradient(180deg,#d4c8a0,#c8b890);border:1px dashed #b8a880;
+}
+/* 摊位遮阳篷 */
+#scene-market .bscene-body::after{
+  content:'';position:absolute;width:80px;height:6px;
+  background:repeating-linear-gradient(90deg,#e44,#e44 20px,#d84 20px,#d84 40px);
+  top:35%;left:20%;border-radius:3px;
+  box-shadow:40px 8px 0 2px #fff8,80px -4px 0 2px #fff6;
+}
+/* 天平图标 */
+.scene-scale{
+  position:absolute;font-size:28px;animation:scaleBounce 2s ease-in-out infinite;
+}
+@keyframes scaleBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-/* ===== 城堡场景 ===== */
-#scene-castle .bscene-bg { background:linear-gradient(180deg,#2a2a4a,#1a1a3a,#0a1a2a); }
-#scene-castle .bscene-bg::before { content:'🏰'; font-size:55px; position:absolute; top:20%; }
-.slot-reel { display:inline-block; width:60px; height:60px; background:rgba(0,0,0,.5); border-radius:10px; margin:4px; font-size:36px; display:inline-flex; align-items:center; justify-content:center; border:2px solid rgba(255,215,0,.2); overflow:hidden; }
-.slot-reel .sr-inner { animation:slotSpin .1s linear infinite; }
-@keyframes slotSpin { 0%{transform:translateY(0);} 100%{transform:translateY(-240px);} }
+/* ================================================================
+   11. 龙巢 - 火山龙穴
+   火山+岩浆+龙+财宝堆
+   ================================================================ */
+#scene-dragon .bscene-body{
+  background:linear-gradient(180deg,#1a0808,#3a1008 25%,#4a1508 45%,#2a0a08 65%,#0a0a0a 100%);
+  overflow:hidden;
+}
+/* 火山 */
+#scene-dragon .bscene-body::before{
+  content:'';position:absolute;bottom:30%;left:50%;transform:translateX(-50%);
+  width:0;height:0;border-left:50px solid transparent;border-right:50px solid transparent;
+  border-bottom:80px solid #4a2a1a;
+}
+/* 火山口发光 */
+#scene-dragon .bscene-body::after{
+  content:'';position:absolute;width:30px;height:30px;
+  background:radial-gradient(#fc0,#f30,transparent);
+  border-radius:50%;top:12%;left:50%;transform:translateX(-50%);
+  animation:volcanoGlow 1.5s ease-in-out infinite;
+}
+@keyframes volcanoGlow{0%,100%{opacity:.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.3)}}
+/* 龙 */
+.scene-dragon-body{
+  position:absolute;font-size:48px;z-index:2;animation:dragonFloat 3s ease-in-out infinite;
+}
+@keyframes dragonFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+/* 金币堆 */
+.scene-coins{
+  position:absolute;font-size:20px;z-index:1;animation:coinShimmer 2s ease-in-out infinite;
+}
+@keyframes coinShimmer{0%,100%{opacity:.8}50%{opacity:1}}
 
-/* ========== 通用小游戏元素 ========== */
-.game-btn { padding:10px 24px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; border:none; color:#fff; transition:all .15s; }
-.game-btn:active { transform:scale(.92); }
-.game-btn.go { background:linear-gradient(135deg,#5b8,#3a6); }
-.game-btn.no { background:linear-gradient(135deg,#755,#533); }
-.game-btn.play { background:linear-gradient(135deg,#c84,#a63); font-size:15px; padding:12px 36px; }
-.btn-2col { display:flex; gap:10px; justify-content:center; margin-top:8px; }
-.btn-2col .game-btn { flex:1; }
-.result-block { text-align:center; padding:12px; }
-.result-block .rscore { font-size:32px; color:#ffd700; font-weight:700; }
-.result-block .rgold { font-size:18px; color:#6a6; margin-top:4px; }
-.result-block .rbest { font-size:11px; color:#888; margin-top:2px; }
+/* ================================================================
+   12. 城堡 - 熊爪城堡
+   星空+城堡塔楼+旗帜+护城河
+   ================================================================ */
+#scene-castle .bscene-body{
+  background:linear-gradient(180deg,#0a0a2a,#1a1a4a 25%,#2a2a5a 50%,#3a4a5a 65%,#2a3a4a 100%);
+  overflow:hidden;
+}
+/* 星星 */
+#scene-castle .bscene-body::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:40%;
+  background:radial-gradient(1.5px 1.5px at 20% 10%,#fff6,transparent),
+    radial-gradient(1px 1px at 40% 5%,#fff4,transparent),
+    radial-gradient(2px 2px at 60% 15%,#fff5,transparent),
+    radial-gradient(1px 1px at 75% 8%,#fff3,transparent),
+    radial-gradient(1.5px 1.5px at 85% 12%,#fff4,transparent);
+}
+/* 城堡主体 */
+#scene-castle .bscene-body::after{
+  content:'';position:absolute;bottom:30%;left:30%;width:40%;height:40%;
+  background:linear-gradient(180deg,#888,#666,#555);border-radius:4px 4px 0 0;
+}
+/* 塔楼 */
+.scene-tower{
+  position:absolute;width:20px;height:50px;background:linear-gradient(180deg,#777,#555);
+  border-radius:3px 3px 0 0;
+}
+/* 旗帜 */
+.scene-flag{
+  position:absolute;width:0;height:0;
+  border-left:10px solid #c44;border-top:6px solid transparent;border-bottom:6px solid transparent;
+  animation:flagWave 1s ease-in-out infinite;
+}
+@keyframes flagWave{0%,100%{transform:skewX(0)}50%{transform:skewX(5deg)}}
+/* 护城河 */
+.scene-moat{
+  position:absolute;bottom:26%;left:20%;width:60%;height:5%;
+  background:linear-gradient(180deg,#3a6a8a,#1a4a6a);border-radius:2px;
+}
 </style>
