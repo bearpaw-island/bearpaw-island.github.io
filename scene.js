@@ -1,4 +1,4 @@
-// ==================== 建筑场景系统 V2 ====================
+﻿// ==================== 建筑场景系统 V2 ====================
 var SceneGames = {};
 var currentScene = null;
 var SCENE_CD = {};
@@ -71,32 +71,31 @@ function renderScene(bid, lv) {
 
 // ====== 1. 浆果树 - 果园场景 + 摘果子 ======
 function rTree(body, lv, bid) {
+  var h = '<div style="position:absolute;top:5%;right:15%;font-size:14px;opacity:.9;animation:cloudDrift 8s ease-in-out infinite">☁️</div>';
+  h += '<div style="position:absolute;top:10%;left:10%;font-size:12px;opacity:.8;animation:cloudDrift 10s ease-in-out infinite .5s">☁️</div>';
+  // 山丘
+  h += '<div style="position:absolute;bottom:25%;left:0;right:0;height:25%;background:linear-gradient(180deg,#6a9e4a,#4a7a30);border-radius:50% 50% 0 0;z-index:1"></div>';
+  // 树 - 用emoji直接渲染
   var trees = [
-    {x: 10, h: 50, c: 'c1'},
-    {x: 140, h: 70, c: 'c2'},
-    {x: 260, h: 55, c: 'c3'},
-    {x: 60, h: 45, c: 'c2'},
-    {x: 200, h: 60, c: 'c1'},
-    {x: 310, h: 40, c: 'c3'}
+    {x: 25, y: 22, s: 36, emoji: '🌳'},
+    {x: 100, y: 18, s: 42, emoji: '🌲'},
+    {x: 180, y: 20, s: 38, emoji: '🌳'},
+    {x: 260, y: 22, s: 36, emoji: '🌲'},
+    {x: 150, y: 26, s: 30, emoji: '🌴'},
+    {x: 320, y: 25, s: 28, emoji: '🌳'}
   ];
-
-  var h = '';
-  trees.forEach(function(t, i) {
-    h += '<div class="scene-tree-trunk" style="left:' + (t.x + 8) + 'px;bottom:35%;height:' + t.h + 'px"></div>';
-    h += '<div class="scene-tree-crown ' + t.c + '" style="left:' + (t.x - 16) + 'px;bottom:' + (35 + t.h) + '%"></div>';
+  trees.forEach(function(t) {
+    h += '<div style="position:absolute;left:'+t.x+'px;bottom:'+t.y+'%;font-size:'+t.s+'px;z-index:2;animation:treeBob 3s ease-in-out infinite '+(t.x*.01)+'s">'+t.emoji+'</div>';
   });
-  h += '<div class="scene-grass"></div>';
-
+  // 果实
   var fruits = [
-    {x: 30, y: 15, color: '#e44'}, {x: 155, y: 8, color: '#f90'},
-    {x: 275, y: 16, color: '#e44'}, {x: 80, y: 18, color: '#fc0'},
-    {x: 220, y: 10, color: '#e44'}, {x: 330, y: 20, color: '#f90'},
-    {x: 50, y: 22, color: '#fc0'}, {x: 180, y: 6, color: '#e44'}
+    {x: 35, y: 12, e:'🍎'},{x: 110, y: 8, e:'🍊'},{x: 190, y: 10, e:'🍋'},
+    {x: 270, y: 12, e:'🍎'},{x: 160, y: 16, e:'🍐'},{x: 330, y: 15, e:'🍇'},
+    {x: 70, y: 18, e:'🍊'},{x: 220, y: 14, e:'🍎'}
   ];
   fruits.forEach(function(f) {
-    h += '<div class="scene-fruit" style="left:' + f.x + 'px;top:' + f.y + '%;background:' + f.color + ';box-shadow:0 0 4px ' + f.color + '" data-fruit="1"></div>';
+    h += '<div data-fruit="1" style="position:absolute;left:'+f.x+'px;top:'+f.y+'%;font-size:16px;cursor:pointer;z-index:3;animation:fruitBounce 2s ease-in-out infinite '+(Math.random()*2)+'s">'+f.emoji+'</div>';
   });
-
   body.innerHTML = h;
 
   // 摘果子小游戏
@@ -149,69 +148,51 @@ function endGame(score, lv, bid, icon, unit) {
 }
 
 // ====== 2. 矿场 - 矿洞场景 + 挖矿 ======
-function rMine(body, lv, bid) {
-  var h = '';
-  // 宝石光斑
-  for (var i = 0; i < 8; i++) {
-    h += '<div class="scene-gem-glow" style="left:' + (10 + Math.random() * 80) + '%;top:' + (10 + Math.random() * 40) + '%;animation-delay:' + (Math.random() * 2) + 's"></div>';
-  }
-  h += '<div class="scene-rail"></div>';
-  h += '<div class="scene-cart" style="left:60px"></div>';
-  // 可敲矿石
-  var rocks = [
-    {x: 30, y: 40, s: 24, c: '#555'},
-    {x: 120, y: 50, s: 30, c: '#666'},
-    {x: 220, y: 35, s: 20, c: '#777'},
-    {x: 300, y: 48, s: 28, c: '#555'},
-    {x: 80, y: 60, s: 22, c: '#696'},
-    {x: 180, y: 55, s: 26, c: '#595'},
-  ];
-  rocks.forEach(function(r) {
-    h += '<div class="scene-rock" data-rock="1" style="left:' + r.x + 'px;top:' + r.y + '%;width:' + r.s + 'px;height:' + (r.s * .75) + 'px;background:' + r.c + ';animation-delay:' + (Math.random() * 2) + 's;border-radius:' + (30 + Math.random() * 20) + '% ' + (40 + Math.random() * 20) + '% ' + (30 + Math.random() * 20) + '% ' + (40 + Math.random() * 20) + '%"></div>';
-  });
-  body.innerHTML = h;
+// ====== 2. 矿场
 
+// ====== 2. 矿场 ======
+function rMine(body, lv, bid) {
+  var h = '<div style="position:absolute;top:15%;left:10%;font-size:40px">⛰️</div><div style="position:absolute;top:10%;right:15%;font-size:32px">⛰️</div>';
+  h += '<div style="position:absolute;bottom:20%;left:0;right:0;height:20%;background:linear-gradient(180deg,#3a2a1a,#2a1a0a)"></div>';
+  h += '<div style="position:absolute;bottom:24%;left:0;right:0;height:6px;background:repeating-linear-gradient(90deg,#5a4a3a 0,#5a4a3a 12px,#3a2a1a 12px,#3a2a1a 14px)"></div>';
+  h += '<div style="position:absolute;bottom:25%;left:80px;font-size:20px">🚂</div>';
+  var gems = [{x:30,y:20},{x:150,y:30},{x:250,y:22},{x:100,y:40},{x:200,y:35},{x:320,y:28}];
+  gems.forEach(function(g,i){h += '<div style="position:absolute;left:'+g.x+'px;top:'+g.y+'%;font-size:6px;color:#ffd700;text-shadow:0 0 4px #ffd700;animation:gemPulse 2s ease-in-out infinite '+i*.3+'s">✦</div>'});
+  var rocks = [{x:40,y:35,e:'🪨'},{x:130,y:42,e:'💎'},{x:230,y:32,e:'🪨'},{x:310,y:45,e:'💎'},{x:90,y:50,e:'🪨'},{x:190,y:48,e:'🪨'}];
+  rocks.forEach(function(r,i){h += '<div data-rock="1" style="position:absolute;left:'+r.x+'px;top:'+r.y+'%;font-size:22px;cursor:pointer;z-index:3;animation:rockFloat 2s ease-in-out infinite '+i*.4+'s">'+r.e+'</div>'});
+  body.innerHTML = h;
   var cd = sceneCd(bid);
   var ga = document.getElementById('scn-game-area');
-  ga.innerHTML = cd > 0
-    ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 ' + cd + 's</button>'
-    : '<button class="scene-play-btn" id="scn-start">⛏️ 挖矿 (10秒)</button>';
-
+  ga.innerHTML = cd > 0 ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 '+cd+'s</button>' : '<button class="scene-play-btn" id="scn-start">⛏️ 挖矿 (10秒)</button>';
   if (cd > 0) return;
   document.getElementById('scn-start').onclick = function() {
-    setSceneCd(bid);
-    var score = 0, gems = 0, timeLeft = 10, running = true;
+    setSceneCd(bid); var score=0,gems=0,tl=10,running=true;
     ga.innerHTML = '<div style="display:flex;justify-content:space-between;padding:0 6px"><span style="color:#ddd;font-weight:700">⛏️ <b id="gs">0</b></span><span style="color:#6cf;font-weight:700">💠 <b id="gg">0</b></span><span style="color:#f66;font-weight:700" id="gt">⏱ 10s</span></div>';
-
-    var ti = setInterval(function() {
-      timeLeft--; var t = document.getElementById('gt'); if (t) t.textContent = '⏱ ' + timeLeft + 's';
-      if (timeLeft <= 0) { clearInterval(ti); running = false; endMine(score, gems, lv, bid); }
-    }, 1000);
-
-    body.addEventListener('click', function(e) {
-      var r = e.target.closest('[data-rock]');
-      if (r && running) {
-        r.style.transform = 'scale(0.3)'; r.style.transition = 'transform .2s'; r.style.opacity = '.3';
-        setTimeout(function() { r.style.transform = ''; r.style.transition = ''; r.style.opacity = '1'; }, 300);
-        if (Math.random() < .12) { gems++; sfxBuild(); var gg = document.getElementById('gg'); if (gg) gg.textContent = gems; }
-        else { score++; sfxHit(); var gs = document.getElementById('gs'); if (gs) gs.textContent = score; }
-      }
-    });
+    var ti=setInterval(function(){tl--;var t=document.getElementById('gt');if(t)t.textContent='⏱ '+tl+'s';if(tl<=0){clearInterval(ti);running=false;endMine(score,gems,lv,bid)}},1000);
+    body.addEventListener('click',function(e){var r=e.target.closest('[data-rock]');if(r&&running){r.style.transform='scale(0.3)';r.style.transition='transform .2s';setTimeout(function(){r.style.transform=''},300);if(r.textContent==='💎'){gems++;sfxBuild();document.getElementById('gg').textContent=gems}else{score++;sfxHit();document.getElementById('gs').textContent=score}}});
   };
 }
 
-function endMine(score, gems, lv, bid) {
-  var gold = score * lv * 60 + gems * lv * 400;
-  S.gold += gold; S.gems += gems; save(); updateUI();
-  sfxGold();
-  var ga = document.getElementById('scn-game-area');
-  ga.innerHTML = '<div class="result-block"><div class="rscore">⛏️ ' + score + ' 💠 ' + gems + '</div><div class="rgold">+'+fmt(gold)+' 💰</div></div>';
+// ====== 3. 农田 ======
+function rFarm(body, lv, bid) {
+  var h = '<div style="position:absolute;top:8%;right:12%;font-size:36px;animation:sunGlow 3s ease-in-out infinite">☀️</div>';
+  h += '<div style="position:absolute;bottom:20%;left:0;right:0;height:30%;background:linear-gradient(180deg,#8ab860,#6a9e4a 30%,#7a8e3a 60%,#5a7a2a)"></div>';
+  for(var r=0;r<4;r++){for(var c=0;c<8;c++){h+='<div style="position:absolute;left:'+(20+c*40)+'px;bottom:'+(20+r*8)+'%;font-size:16px;animation:wheatSway 3s ease-in-out infinite '+(c*.2+r*.3)+'s">'+['🌾','🌿','🌾','🌿','🌾','🌾','🌿','🌾'][c]+'</div>'}}
+  h += '<div style="position:absolute;left:280px;bottom:25%;font-size:24px;animation:millSpin 3s linear infinite">🏠</div>';
+  h += '<div style="position:absolute;left:30px;bottom:20%;font-size:24px">🧑‍🌾</div>';
+  body.innerHTML = h;
   var cd = sceneCd(bid);
-  var btn = document.createElement('button'); btn.className = 'scene-play-btn mini'; btn.textContent = cd > 0 ? '冷却 ' + cd + 's' : '再来一次';
-  if (cd <= 0) btn.onclick = function() { renderScene(bid, S.lvs[bid] || 1); };
-  ga.appendChild(btn);
+  var ga = document.getElementById('scn-game-area');
+  ga.innerHTML = cd > 0 ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 '+cd+'s</button>' : '<button class="scene-play-btn" id="scn-start">💧 浇水 (15秒)</button>';
+  if (cd > 0) return;
+  document.getElementById('scn-start').onclick = function() {
+    setSceneCd(bid); var water=50,score=0,tl=15,running=true,target=35+Math.random()*30;
+    ga.innerHTML = '<div style="display:flex;justify-content:space-between;padding:0 6px"><span style="color:#6cf;font-weight:700">💧 <b id="gs">0</b></span><span style="color:#f66;font-weight:700" id="gt">⏱ 15s</span></div>'+'<div class="water-bar-bg"><div class="water-bar-fill" id="wf" style="width:50%"></div></div>'+'<div style="position:relative;height:24px"><div class="water-zone" id="wz" style="left:'+(target/100*300)+'px;top:0"></div></div>'+'<button class="scene-play-btn" id="gm-tap" style="padding:8px 20px;font-size:13px;margin-top:4px">💧 浇水！</button>';
+    var di=setInterval(function(){if(!running)return;water-=4;if(water<0)water=0;var wf=document.getElementById('wf');if(wf)wf.style.width=water+'%'},300);
+    var ti=setInterval(function(){tl--;var t=document.getElementById('gt');if(t)t.textContent='⏱ '+tl+'s';if(tl<=0){clearInterval(ti);clearInterval(di);running=false;endGame(score,lv,bid,'💧','次浇水')}},1000);
+    document.getElementById('gm-tap').onclick=function(){if(!running)return;water=Math.min(100,water+14);document.getElementById('wf').style.width=water+'%';if(Math.abs(water-target)<12){score++;sfxGold();document.getElementById('gs').textContent=score;target=20+Math.random()*60;document.getElementById('wz').style.left=(target/100*300)+'px'}else sfxClick()};
+  };
 }
-
 // ====== 3. 农田 - 农场场景 + 浇水 ======
 function rFarm(body, lv, bid) {
   var h = '';
@@ -267,55 +248,7 @@ function rFarm(body, lv, bid) {
   };
 }
 
-// ====== 4. 渔场 - 海洋场景 + 钓鱼 ======
-function rFish(body, lv, bid) {
-  var h = '';
-  h += '<div class="scene-beach"></div>';
-  h += '<div class="scene-boat" style="left:40px;top:38%"></div>';
-  h += '<div class="scene-boat" style="left:250px;top:42%"></div>';
-  // 水下鱼
-  for (var i = 0; i < 4; i++) {
-    h += '<div class="scene-fish-swim" style="top:' + (55 + i * 8) + '%;animation-delay:' + (i * 1.2) + 's;font-size:' + (14 + i * 4) + 'px">' + ['🐟','🐠','🐡','🦈'][i] + '</div>';
-  }
-  h += '<div class="scene-rod" style="right:40px;top:25%"></div>';
-  body.innerHTML = h;
-
-  var cd = sceneCd(bid);
-  var ga = document.getElementById('scn-game-area');
-  ga.innerHTML = cd > 0
-    ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 ' + cd + 's</button>'
-    : '<button class="scene-play-btn" id="scn-start">🎣 钓鱼 (5次)</button>';
-
-  if (cd > 0) return;
-  document.getElementById('scn-start').onclick = function() {
-    setSceneCd(bid);
-    var tries = 5, score = 0, running = true, fishPos = 50;
-    ga.innerHTML =
-      '<div style="text-align:center;color:#ffd700;font-weight:700;margin-bottom:4px">🎣 <b id="gs">0</b>/5</div>' +
-      '<div style="position:relative;height:50px;background:rgba(5,20,40,.6);border-radius:8px;overflow:hidden;margin:0 20px">' +
-      '<div id="fishT" style="font-size:22px;position:absolute;top:50%;transform:translateY(-50%);left:-30px;transition:left .6s linear">🐟</div>' +
-      '<div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#6cf;box-shadow:0 0 4px #6cf"></div></div>' +
-      '<button class="scene-play-btn" id="gm-cast" style="padding:6px 16px;font-size:13px;margin-top:6px">🎣 收竿！</button>';
-
-    function move() {
-      if (!running) return;
-      fishPos = 15 + Math.random() * 70;
-      var ft = document.getElementById('fishT'); if (ft) ft.style.left = fishPos + '%';
-    }
-    move();
-
-    document.getElementById('gm-cast').onclick = function() {
-      if (!running) return;
-      if (Math.abs(fishPos - 50) < 12) { score++; sfxBuild(); } else { sfxHit(); }
-      document.getElementById('gs').textContent = score + '/5';
-      tries--;
-      if (tries <= 0) { running = false; endGame(score, lv, bid, '🎣', '条鱼'); return; }
-      move();
-    };
-  };
-}
-
-// ====== 5. 磨坊 - 风车场景 + 磨面 ======
+// ====== 4. 渔场 (overridden) - 风车场景 + 磨面 ======
 function rMill(body, lv, bid) {
   body.innerHTML = '<div style="position:absolute;left:20px;bottom:25%;font-size:20px">🌾</div><div style="position:absolute;left:60px;bottom:25%;font-size:20px">🌾</div><div style="position:absolute;left:100px;bottom:25%;font-size:20px">🌾</div><div style="position:absolute;left:200px;bottom:25%;font-size:20px">🌾</div><div style="position:absolute;left:240px;bottom:25%;font-size:20px">🌾</div>';
 
@@ -351,60 +284,7 @@ function rMill(body, lv, bid) {
   };
 }
 
-// ====== 6. 酒馆 - 酒馆场景 + 招待客人 ======
-function rBar(body, lv, bid) {
-  var h = '';
-  for (var i = 0; i < 3; i++) { h += '<div class="scene-lantern" style="left:' + (30 + i * 100) + 'px;top:6%;animation-delay:' + (i * .7) + 's"></div>'; }
-  h += '<div class="scene-barrel" style="left:20px;bottom:27%"></div><div class="scene-barrel" style="left:260px;bottom:27%"></div>';
-  h += '<div style="position:absolute;left:160px;bottom:28%;font-size:24px">🪑</div>';
-  body.innerHTML = h;
-
-  var cd = sceneCd(bid);
-  var ga = document.getElementById('scn-game-area');
-  ga.innerHTML = cd > 0
-    ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 ' + cd + 's</button>'
-    : '<button class="scene-play-btn" id="scn-start">🍺 招待客人 (8位)</button>';
-
-  if (cd > 0) return;
-  document.getElementById('scn-start').onclick = function() {
-    setSceneCd(bid);
-    var score = 0, total = 8, round = 0, running = true;
-    var menu = [
-      {order: '🍕', opts: '🍕\u00a0🍔\u00a0🥗', ans: '🍕'},
-      {order: '🍜', opts: '🍝\u00a0🍜\u00a0🍚', ans: '🍜'},
-      {order: '🍰', opts: '🧁\u00a0🍩\u00a0🍰', ans: '🍰'},
-      {order: '🍺', opts: '🍷\u00a0🍺\u00a0☕', ans: '🍺'},
-      {order: '🥩', opts: '🍗\u00a0🥩\u00a0🧀', ans: '🥩'},
-      {order: '🍣', opts: '🍣\u00a0🍤\u00a0🥟', ans: '🍣'},
-      {order: '🍦', opts: '🍨\u00a0🍰\u00a0🍦', ans: '🍦'},
-      {order: '🌮', opts: '🥙\u00a0🌮\u00a0🥪', ans: '🌮'}
-    ];
-
-    function next() {
-      if (round >= total || !running) { endGame(score, lv, bid, '🍺', '位客人'); return; }
-      var m = menu[round];
-      ga.innerHTML =
-        '<div style="text-align:center;color:#fc6;font-size:22px;margin-bottom:2px">' + m.order + ' 想要这个！</div>' +
-        '<div style="text-align:center;font-size:10px;color:#888;margin-bottom:4px">第 ' + (round + 1) + '/8 位 · 3秒内选择</div>' +
-        '<div style="display:flex;justify-content:center;gap:6px">' +
-        '<button class="scene-play-btn mini gm-choice" data-a="' + m.ans + '" style="font-size:22px;padding:6px 14px">🍕</button>' +
-        '<button class="scene-play-btn mini gm-choice" data-a="' + m.ans + '" style="font-size:22px;padding:6px 14px">🍜</button>' +
-        '<button class="scene-play-btn mini gm-choice" data-a="' + m.ans + '" style="font-size:22px;padding:6px 14px">🍰</button></div>' +
-        '<div style="text-align:center;margin-top:2px;color:#ffd700">✅ <b id="gs">' + score + '</b>/8</div>';
-      round++;
-    }
-    next();
-
-    ga.addEventListener('click', function(e) {
-      var b = e.target.closest('.gm-choice'); if (!b || !running) return;
-      if (b.textContent.trim() === menu[round - 1].ans) { score++; sfxGold(); } else { sfxHit(); }
-      document.getElementById('gs').textContent = score + '/8';
-      next();
-    });
-  };
-}
-
-// ====== 7. 神殿 - 神殿场景 + 祈福 ======
+// ====== 6. 酒馆 (overridden) - 神殿场景 + 祈福 ======
 function rTemple(body, lv, bid) {
   var h = '';
   for (var i = 0; i < 5; i++) { h += '<div class="scene-holy-light" style="left:' + (20 + i * 60) + 'px;top:15%;animation-delay:' + (i * .4) + 's;transform-origin:top center"></div>'; }
@@ -690,5 +570,59 @@ function rCastle(body, lv, bid) {
       };
     }
     next();
+  };
+}
+
+// ====== 4. 渔场 ======
+function rFish(body, lv, bid) {
+  var h = '<div style="position:absolute;top:8%;left:20%;font-size:14px;opacity:.9">☁️</div>';
+  h += '<div style="position:absolute;bottom:0;left:0;right:0;height:20%;background:linear-gradient(180deg,#e8d5a0,#d4c090,#c8b880)"></div>';
+  h += '<div style="position:absolute;top:40%;left:50px;font-size:24px">⛵</div>';
+  h += '<div style="position:absolute;top:44%;left:250px;font-size:16px">🚣</div>';
+  for(var i=0;i<4;i++){h+='<div style="position:absolute;top:'+(55+i*8)+'%;font-size:'+(14+i*4)+'px;animation:fishSwim '+(4+i*1.5)+'s linear infinite '+i*1.2+'s">'+['🐟','🐠','🐡','🦈'][i]+'</div>'}
+  h += '<div style="position:absolute;top:25%;right:30px;font-size:22px">🎣</div>';
+  body.innerHTML = h;
+  body.innerHTML = h;
+  var cd = sceneCd(bid);
+  var ga = document.getElementById('scn-game-area');
+  ga.innerHTML = cd > 0 ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 '+cd+'s</button>' : '<button class="scene-play-btn" id="scn-start">🎣 钓鱼 (5次)</button>';
+  if (cd > 0) return;
+  document.getElementById('scn-start').onclick = function() {
+    setSceneCd(bid); var tries=5,score=0,running=true,fishPos=50;
+    ga.innerHTML = '<div style="text-align:center;color:#ffd700;font-weight:700;margin-bottom:4px">🎣 <b id="gs">0</b>/5</div><div style="position:relative;height:50px;background:rgba(5,20,40,.6);border-radius:8px;overflow:hidden;margin:0 20px"><div id="fishT" style="font-size:22px;position:absolute;top:50%;transform:translateY(-50%);left:-30px;transition:left .6s linear">🐟</div><div style="position:absolute;left:50%;top:0;bottom:0;width:2px;background:#6cf"></div></div><button class="scene-play-btn" id="gm-cast" style="padding:6px 16px;font-size:13px;margin-top:6px">🎣 收竿！</button>';
+    function move(){if(!running)return;fishPos=15+Math.random()*70;document.getElementById('fishT').style.left=fishPos+'%'}
+    move();
+    document.getElementById('gm-cast').onclick=function(){if(!running)return;if(Math.abs(fishPos-50)<12){score++;sfxBuild()}else sfxHit();document.getElementById('gs').textContent=score+'/5';tries--;if(tries<=0){running=false;endGame(score,lv,bid,'🎣','条鱼');return}move()};
+  };
+}
+
+function endMine(score, gems, lv, bid) {
+  var gold = score * lv * 60 + gems * lv * 400;
+  S.gold += gold; S.gems += gems; save(); updateUI();
+  sfxGold();
+  var ga = document.getElementById('scn-game-area');
+  ga.innerHTML = '<div class="result-block"><div class="rscore">⛏️ ' + score + ' 💠 ' + gems + '</div><div class="rgold">+'+fmt(gold)+' 💰</div></div>';
+  var cd = sceneCd(bid);
+  var btn = document.createElement('button'); btn.className = 'scene-play-btn mini'; btn.textContent = cd > 0 ? '冷却 ' + cd + 's' : '再来一次';
+  if (cd <= 0) btn.onclick = function() { renderScene(bid, S.lvs[bid] || 1); };
+  ga.appendChild(btn);
+}
+
+// ====== 6. 酒馆 ======
+function rBar(body, lv, bid) {
+  var h = '<div style="position:absolute;left:30px;top:6%;font-size:16px">🏮</div><div style="position:absolute;left:130px;top:6%;font-size:16px">🏮</div><div style="position:absolute;left:230px;top:6%;font-size:16px">🏮</div>';
+  h += '<div style="position:absolute;left:20px;bottom:25%;font-size:22px">🛢️</div><div style="position:absolute;left:260px;bottom:25%;font-size:22px">🛢️</div>';
+  h += '<div style="position:absolute;left:160px;bottom:28%;font-size:20px">🪑</div><div style="position:absolute;left:80px;bottom:28%;font-size:20px">🪑</div>';
+  body.innerHTML = h;
+  var cd = sceneCd(bid);
+  var ga = document.getElementById('scn-game-area');
+  ga.innerHTML = cd > 0 ? '<button class="scene-play-btn" disabled style="opacity:.5">冷却中 '+cd+'s</button>' : '<button class="scene-play-btn" id="scn-start">🍺 招待客人 (8位)</button>';
+  if (cd > 0) return;
+  document.getElementById('scn-start').onclick = function() {
+    setSceneCd(bid); var score=0,round=0,running=true;
+    var menu = [{o:'🍕',a:'🍕'},{o:'🍜',a:'🍜'},{o:'🍰',a:'🍰'},{o:'🍺',a:'🍺'},{o:'🥩',a:'🥩'},{o:'🍣',a:'🍣'},{o:'🍦',a:'🍦'},{o:'🌮',a:'🌮'}];
+    function next(){if(round>=8||!running){endGame(score,lv,bid,'🍺','位客人');return}var m=menu[round];ga.innerHTML='<div style="text-align:center;color:#fc6;font-size:22px">'+m.o+' 想要这个！</div><div style="text-align:center;font-size:10px;color:#888">第'+(round+1)+'/8位</div><div style="display:flex;justify-content:center;gap:4px"><button class="scene-play-btn mini gm-choice" style="font-size:18px">🍕</button><button class="scene-play-btn mini gm-choice" style="font-size:18px">🍜</button><button class="scene-play-btn mini gm-choice" style="font-size:18px">🍰</button></div><div style="text-align:center;color:#ffd700">✅ <b id="gs">'+score+'</b>/8</div>';round++}
+    next();
+    ga.addEventListener('click',function(e){var b=e.target.closest('.gm-choice');if(!b||!running||round>8)return;if(b.textContent===menu[round-1].a){score++;sfxGold()}else sfxHit();document.getElementById('gs').textContent=score+'/8';next()});
   };
 }
