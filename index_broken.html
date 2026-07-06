@@ -1,0 +1,491 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=375, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>鐔婄埅灏忓矝</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d0d1a;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;font-family:'Microsoft YaHei',sans-serif}
+#game{width:375px;height:667px;position:relative;overflow:hidden;border-radius:14px;box-shadow:0 0 40px rgba(80,60,200,.3)}
+.bg{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a 0%,#141435 30%,#1a1a3e 60%,#0f0f28 100%);z-index:0}
+.stars{position:absolute;top:0;left:0;right:0;bottom:0;z-index:1;pointer-events:none}
+.star{position:absolute;background:#fff;border-radius:50%;animation:twinkle 2s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.3}50%{opacity:.8}}
+#top{z-index:10;position:absolute;top:0;left:0;right:0;height:60px;background:linear-gradient(180deg,rgba(30,20,50,.98),rgba(25,18,45,.95));display:flex;align-items:center;padding:0 14px;border-bottom:1px solid rgba(255,215,0,.15)}
+#gld{color:#ffd700;font-size:18px;font-weight:bold;flex:1;text-shadow:0 0 8px rgba(255,215,0,.3)}
+#gms{color:#6cf;font-size:18px;font-weight:bold;text-shadow:0 0 8px rgba(102,204,255,.3)}
+#rate{position:absolute;top:40px;left:0;right:0;text-align:center;color:#8a8;font-size:11px;z-index:10}
+#scroll{z-index:5;position:absolute;top:60px;bottom:64px;left:0;right:0;overflow-y:auto;padding:6px 10px;-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+#scroll::-webkit-scrollbar{width:0}
+#bottom{z-index:10;position:absolute;bottom:0;left:0;right:0;height:64px;background:linear-gradient(0deg,rgba(25,18,45,.98),rgba(30,20,50,.95));display:flex;justify-content:space-evenly;align-items:center;border-top:1px solid rgba(255,215,0,.15)}
+.bbtn{padding:10px 18px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;border:none;color:#fff;transition:transform .15s,filter .15s;position:relative;overflow:hidden}
+.bbtn:active{transform:scale(.94);filter:brightness(1.2)}
+.bbtn.e{background:linear-gradient(135deg,#3a8,#2a6)}
+.bbtn.c{background:linear-gradient(135deg,#48a,#369)}
+.bbtn.a{background:linear-gradient(135deg,#c84,#a63)}
+.bbtn.d{background:linear-gradient(135deg,#a3a,#825)}
+.card{background:linear-gradient(135deg,rgba(45,35,70,.92),rgba(35,28,58,.92));border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.05);transition:transform .2s,box-shadow .2s;position:relative;overflow:hidden}
+.card:hover{transform:translateX(2px);box-shadow:0 2px 12px rgba(100,80,200,.15)}
+.card .shine{position:absolute;top:-50%;left:-50%;width:100%;height:100%;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.03) 50%,transparent 60%);animation:cardShine 3s ease-in-out infinite}
+@keyframes cardShine{0%,100%{transform:translate(-100%,-100%)}50%{transform:translate(100%,100%)}}
+.card.lv0 .name{color:#aaa}
+.card.lv0{border-color:rgba(255,255,255,.03)}
+.card .ico{font-size:30px;margin-right:10px;width:44px;text-align:center;filter:drop-shadow(0 0 4px rgba(255,200,50,.3))}
+.card .info{flex:1;position:relative;z-index:1}
+.card .name{color:#ffd700;font-size:14px;font-weight:bold}
+.card .level{color:#999;font-size:11px}
+.card .rate{color:#8a8;font-size:10px}
+.card .act{padding:8px 0;width:68px;border-radius:7px;font-size:13px;font-weight:bold;cursor:pointer;border:none;color:#fff;text-align:center;position:relative;z-index:1;transition:transform .15s}
+.card .act:active{transform:scale(.93)}
+.act.build{background:linear-gradient(135deg,#5a8,#3a6)}
+.act.max{background:#333;color:#666;cursor:default}
+.overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);display:none;justify-content:center;align-items:center;z-index:100;backdrop-filter:blur(2px)}
+.overlay.show{display:flex}
+.popup{background:linear-gradient(180deg,#2a2a4e,#222242);border-radius:16px;padding:28px 24px;text-align:center;max-width:290px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.15);animation:popIn .25s ease-out}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.popup .pt{font-size:24px;color:#ffd700;margin-bottom:10px}
+.popup .pd{color:#bbb;font-size:14px;margin-bottom:20px;white-space:pre-line;line-height:1.5}
+.popup .pb{display:flex;gap:10px;justify-content:center}
+.pbtn{padding:10px 28px;border-radius:10px;font-size:15px;font-weight:bold;border:none;color:#fff;cursor:pointer;transition:transform .15s}
+.pbtn:active{transform:scale(.94)}
+.pbtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
+.pbtn.cancel{background:linear-gradient(135deg,#855,#633)}
+#colpanel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a,#141435);display:none;z-index:50;overflow-y:auto;padding:24px 16px;-webkit-overflow-scrolling:touch}
+#colpanel .ct{text-align:center;color:#ffd700;font-size:22px;font-weight:bold;margin-bottom:4px}
+#colpanel .cc{text-align:center;color:#888;font-size:13px;margin-bottom:18px}
+.citem{background:rgba(40,30,65,.7);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.04)}
+.citem .ci{font-size:28px;margin-right:12px}
+.citem .ctxt{flex:1}
+.citem .cn{font-size:14px;font-weight:bold}
+.citem .cd{font-size:11px;color:#777;margin-top:2px}
+.citem.locked .cn{color:#555}
+.citem.locked .ci{opacity:.3}
+.citem.found .cn{color:#ffd700}
+.citem.found .ci{filter:drop-shadow(0 0 6px rgba(255,215,0,.4))}
+.fly{position:absolute;left:50%;transform:translateX(-50%);color:#ffd700;font-size:18px;font-weight:bold;pointer-events:none;animation:flyUp 1.2s ease-out forwards;z-index:200;text-shadow:0 0 10px rgba(255,215,0,.5)}
+@keyframes flyUp{0%{opacity:1;bottom:180px}100%{opacity:0;bottom:320px}}
+.float{position:absolute;pointer-events:none;z-index:8;animation:float 8s ease-in-out infinite;opacity:.15}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+#achieve{z-index:60;position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a,#141435);display:none;overflow-y:auto;padding:24px 16px}
+#achieve .at{text-align:center;color:#ffd700;font-size:22px;margin-bottom:18px}
+.a-item{background:rgba(40,30,65,.7);border-radius:10px;padding:14px 16px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.04)}
+.a-item .ai{font-size:24px;margin-right:12px}
+.a-item .an{flex:1;font-size:14px;color:#ffd700}
+.a-item .ap{color:#aaa;font-size:12px;margin-top:2px}
+.a-item .ast{color:#5a8;font-size:12px;font-weight:bold}
+.a-item.done{border-color:rgba(100,200,100,.2);background:rgba(40,55,35,.7)}
+.a-item.done .ast{color:#8b8}
+#offline{z-index:70;position:absolute;top:0;left:0;right:0;bottom:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.8)}
+#offline .om{background:linear-gradient(180deg,#1a1a3e,#141435);border-radius:16px;padding:28px;text-align:center;max-width:280px;border:1px solid rgba(255,215,0,.2)}
+#offline .ot{font-size:20px;color:#ffd700;margin-bottom:8px}
+#offline .oe{font-size:32px;color:#ffd700;font-weight:bold;margin:12px 0}
+#offline .obtn{padding:12px 36px;border-radius:10px;font-size:16px;font-weight:bold;border:none;cursor:pointer;margin:6px;color:#fff;transition:transform .15s}
+#offline .obtn:active{transform:scale(.94)}
+#offline .obtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
+#offline .obtn.dbl{background:linear-gradient(135deg,#c84,#a63);animation:pulse 1.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,130,60,.4)}50%{box-shadow:0 0 0 12px rgba(200,130,60,0)}}
+.shop-card{background:linear-gradient(135deg,rgba(30,25,60,.95),rgba(25,20,50,.95));border-radius:12px;padding:14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,215,0,.15)}
+.shop-card .si{font-size:28px;margin-right:12px;width:44px;text-align:center}
+.shop-card .sinfo{flex:1}
+.shop-card .sn{color:#ffd700;font-size:14px;font-weight:bold}
+.shop-card .sd{color:#999;font-size:11px}
+.shop-card .sbtn{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63);transition:transform .15s}
+.shop-card .sbtn:active{transform:scale(.94)}
+#shoppanel,#dailypanel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a,#141435);display:none;z-index:50;overflow-y:auto;padding:24px 16px}
+#shoppanel .st,#dailypanel .dt{text-align:center;color:#ffd700;font-size:22px;font-weight:bold;margin-bottom:18px}
+#mcard{background:linear-gradient(135deg,rgba(200,130,60,.2),rgba(160,100,40,.15));border:1px solid rgba(255,180,60,.3);border-radius:12px;padding:16px;margin-bottom:10px;text-align:center}
+#mcard .mt{font-size:18px;color:#fc6;font-weight:bold}
+#mcard .md{color:#bbb;font-size:12px;margin:4px 0}
+#mcard .mb{color:#ffd700;font-size:26px;font-weight:bold;margin:8px 0}
+#mcard .mbtn{padding:10px 30px;border-radius:10px;font-size:15px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63);transition:transform .15s}
+#mcard .mbtn:active{transform:scale(.94)}
+#mcard.active{border-color:rgba(100,200,100,.4);background:rgba(40,80,40,.2)}
+#mcard.active .mt{color:#8b8}
+#chest-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:200}
+#chest-overlay .ccont{text-align:center;animation:popIn .3s ease-out}
+#chest-overlay .cchest{font-size:80px;animation:bounce .6s ease-in-out infinite alternate}
+@keyframes bounce{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.1) translateY(-10px)}}
+#chest-overlay .cres{color:#ffd700;font-size:22px;font-weight:bold;margin:12px 0}
+#chest-overlay .cbtn{padding:12px 36px;border-radius:10px;font-size:16px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5a8,#3a6);margin-top:8px;transition:transform .15s}
+#chest-overlay .cbtn:active{transform:scale(.94)}
+.daily-item{background:rgba(40,30,65,.7);border-radius:10px;padding:14px;margin-bottom:8px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.04)}
+.daily-item .di{font-size:24px;margin-right:12px}
+.daily-item .dinfo{flex:1}
+.daily-item .dn{color:#ffd700;font-size:14px}
+.daily-item .dp{color:#aaa;font-size:11px;margin-top:2px}
+.daily-item .dbar{width:100%;height:6px;background:#333;border-radius:3px;margin-top:6px;overflow:hidden}
+.daily-item .dfill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4a8,#6cf);transition:width .3s}
+.daily-item .dreward{color:#c84;font-size:13px;font-weight:bold;text-align:right;min-width:60px}
+.daily-item.done .dn{color:#8b8}
+.daily-item.done .dreward{color:#5a8}
+.ad-bar{position:absolute;bottom:0;left:0;right:0;height:50px;background:rgba(0,0,0,.8);display:none;justify-content:center;align-items:center;z-index:20;color:#aaa;font-size:12px;gap:10px}
+.ad-bar .abtn{padding:6px 16px;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63);transition:transform .15s}
+.ad-bar .abtn:active{transform:scale(.94)}.bbtn.s{background:linear-gradient(135deg,#c84,#a63);font-size:11px;padding:8px 8px}
+.bbtn.t{background:linear-gradient(135deg,#fc6,#c84);font-size:11px;padding:8px 8px}</style>
+</head>
+<body>
+<div id="game">
+  <canvas id="stars" class="stars"></canvas>
+  <div class="bg"></div>
+
+  <div id="top"><span id="gld">馃挵 100</span><span id="gms">馃挔 5</span></div>
+  <div id="rate">馃挵 0/s</div>
+  <div id="scroll"></div>
+  <div id="bottom">
+    <button class="bbtn e" id="btexp">馃攳 鎺㈢储</button>
+    <button class="bbtn c" id="btcol">馃摉 鍥鹃壌</button>
+    <button class="bbtn d" id="btach">馃弳 鎴愬氨</button>
+    <button class="bbtn a" id="btad">馃摵 骞垮憡</button>
+  </div>
+
+  <div id="shoppanel">
+  <div class="st">💎 宝石商城</div>
+  <div style="text-align:center;color:#6cf;font-size:16px;font-weight:bold;margin-bottom:8px">当前 💠 <span id="shopgems">5</span></div>
+  <div id="mcard"><div class="mt">👑 黄金月卡</div><div class="md">每日领取 💰10万 + 💠3 + 广告自动跳过</div><div class="mb">¥30/30天</div><button class="mbtn" id="mcardbtn" onclick="buyCard()">购买月卡</button></div>
+  <div id="shoplist"></div>
+  <div style="text-align:center;padding:10px"><button class="pbtn cancel" id="scb" onclick="toggleShop()">关闭</button></div>
+</div>
+<div id="dailypanel">
+  <div class="dt">📋 每日任务</div>
+  <div id="dlist"></div>
+  <div style="text-align:center;padding:10px"><button class="pbtn cancel" id="dcb" onclick="toggleDaily()">关闭</button></div>
+</div>
+<div id="chest-overlay">
+  <div class="ccont">
+    <div class="cchest">🎁</div>
+    <div class="cres" id="chestResult">获得 xxx 金币！</div>
+    <button class="cbtn" id="chestClose" onclick="claimChest()">📺 双倍领取</button>
+    <button class="cbtn" style="background:#855;margin-top:4px;padding:8px 24px;font-size:13px" id="chestSkip" onclick="claimChestSkip()">跳过</button>
+  </div>
+</div>
+<div class="overlay" id="ol"><div class="popup">
+    <div class="pt" id="pt"></div><div class="pd" id="pd"></div>
+    <div class="pb"><button class="pbtn ok" id="pok">纭</button><button class="pbtn cancel" id="pca">鍙栨秷</button></div>
+  </div></div>
+
+  <div id="colpanel">
+    <div class="ct">馃摉 鍥鹃壌鏀堕泦</div><div class="cc" id="cc"></div><div id="clist"></div>
+    <div style="text-align:center;padding:20px"><button class="pbtn cancel" id="ccb">鍏抽棴</button></div>
+  </div>
+
+  <div id="achieve">
+    <div class="at">馃弳 鎴愬氨</div><div id="alist"></div>
+    <div style="text-align:center;padding:20px"><button class="pbtn cancel" id="acb">鍏抽棴</button></div>
+  </div>
+
+  <div id="offline"><div class="om">
+    <div class="ot">馃寵 浣犵寮€浜?/div><div class="oe" id="oam"></div><div class="ot" id="otm"></div>
+    <button class="obtn ok" id="oc1">馃挵 棰嗗彇</button>
+    <button class="obtn dbl" id="oc2">馃摵 鍙屽€嶉鍙?/button>
+  </div></div>
+</div>
+
+<script>
+// ==================== 鏁版嵁 ====================
+const BD=[
+  {id:'tree',n:'娴嗘灉鏍?,bc:10,cg:5,bi:1,ig:1,ml:20,t:'l1'},
+  {id:'mine',n:'灏忕熆鍦?,bc:50,cg:25,bi:5,ig:3,ml:20,t:'l1'},
+  {id:'farm',n:'鍐滅敯',bc:200,cg:100,bi:15,ig:8,ml:20,t:'l1'},
+  {id:'fish',n:'娓斿満',bc:500,cg:250,bi:40,ig:20,ml:15,t:'l1'},
+  {id:'mill',n:'纾ㄥ潑',bc:800,cg:400,bi:70,ig:30,ml:15,t:'l2'},
+  {id:'bar',n:'灏忛厭棣?,bc:2000,cg:1000,bi:120,ig:60,ml:15,t:'l2'},
+  {id:'temple',n:'绁炴',bc:5000,cg:2500,bi:300,ig:150,ml:12,t:'l2'},
+  {id:'forge',n:'閾佸尃閾?,bc:8000,cg:4000,bi:500,ig:250,ml:12,t:'l2'},
+  {id:'wizard',n:'娉曞笀濉?,bc:15000,cg:8000,bi:1000,ig:400,ml:10,t:'l3'},
+  {id:'market',n:'璐告槗涓績',bc:30000,cg:15000,bi:2000,ig:800,ml:10,t:'l3'},
+  {id:'dragon',n:'榫欏发',bc:80000,cg:40000,bi:5000,ig:2000,ml:8,t:'l3'},
+  {id:'castle',n:'鐔婄埅鍩庡牎',bc:200000,cg:100000,bi:12000,ig:5000,ml:5,t:'l3'},
+];
+const TIER={l1:{name:'鍒濈骇',color:'#aaa'},l2:{name:'涓骇',color:'#6cf'},l3:{name:'楂樼骇',color:'#ffd700'}};
+const IT=[
+  {id:'f1',n:'濂囧紓缇芥瘺',r:1,d:'闂潃寰厜鐨勭窘姣?,u:0},
+  {id:'f2',n:'鐝嶇彔璐?,r:1,d:'娌欐哗涓婄殑缇庝附鐝嶇彔',u:0},
+  {id:'f3',n:'钃濊壊姘存櫠',r:2,d:'鐭挎礊娣卞鐨勭█鏈夋按鏅?,u:3},
+  {id:'f4',n:'钘忓疂鍥剧鐗?,r:2,d:'鎸囧悜绁炵鍦扮偣',u:5},
+  {id:'f5',n:'鏈堝厜鑺?,r:3,d:'鏈堝渾涔嬪缁芥斁鐨勫鑺?,u:8},
+  {id:'f6',n:'鍙や唬闆曞儚',r:3,d:'灏忓皬鐨勫彜浠ｇ鍍?,u:10},
+  {id:'f7',n:'榫欒泲鍖栫煶',r:4,d:'浼犺涓緳鐨勫寲鐭宠泲',u:15},
+  {id:'f8',n:'娴佹槦纰庣墖',r:5,d:'澶╁闄ㄨ惤鐨勬槦鏄熺鐗?,u:20},
+  {id:'f9',n:'鍑ゅ嚢缇芥瘺',r:5,d:'娴寸伀閲嶇敓鐨勭楦熶箣缇?,u:25},
+  {id:'f10',n:'娣辨捣鏄庣彔',r:4,d:'涓囩背娣辨捣鐨勭绉樺疂鐝?,u:30},
+  {id:'f11',n:'鏃跺厜娌欐紡',r:6,d:'鎺у埗鏃堕棿娴佸姩鐨勭鍣?,u:40},
+  {id:'f12',n:'鏄熸牳纰庣墖',r:6,d:'瀹囧畽璇炵敓鏃剁殑娈嬬暀纰庣墖',u:50},
+];
+const ICONS={tree:'馃尦',mine:'鉀?,farm:'馃尵',fish:'馃悷',mill:'鈿?,bar:'馃嵑',temple:'馃彌',forge:'馃敤',wizard:'馃敭',market:'馃彧',dragon:'馃惒',castle:'馃彴'};
+
+// 鎴愬氨瀹氫箟
+const ACH=[
+  {id:'a1',n:'鍒濇潵涔嶅埌',d:'寤洪€犵涓€涓缓绛?,check:s=>Object.values(s.lvs).some(v=>v>0),icon:'馃尡'},
+  {id:'a2',n:'灏忔湁璧勪骇',d:'鎷ユ湁1000閲戝竵',check:s=>s.gold>=1000,icon:'馃挵'},
+  {id:'a3',n:'寤鸿鐙備汉',d:'鎬诲缓绛戠瓑绾ц揪鍒?0',check:s=>{let t=0;BD.forEach(b=>t+=s.lvs[b.id]||0);return t>=20},icon:'馃敡'},
+  {id:'a4',n:'鏀堕泦杈句汉',d:'鏀堕泦5绉嶇墿鍝?,check:s=>s.found.length>=5,icon:'馃摝'},
+  {id:'a5',n:'鐧句竾瀵岀縼',d:'鎷ユ湁100涓囬噾甯?,check:s=>s.gold>=1e6,icon:'馃拵'},
+  {id:'a6',n:'鏀惰棌瀹?,d:'鏀堕泦鍏ㄩ儴12绉嶇墿鍝?,check:s=>s.found.length>=12,icon:'馃弳'},
+  {id:'a7',n:'寤虹瓚澶у笀',d:'鎷ユ湁榫欏发',check:s=>(s.lvs['dragon']||0)>0,icon:'馃惒'},
+  {id:'a8',n:'鐜嬪浗涔嬩富',d:'寤洪€犵唺鐖煄鍫?,check:s=>(s.lvs['castle']||0)>0,icon:'馃憫'},
+];
+// 姣忔棩浠诲姟
+const DAILY=[
+  {id:'d1',n:'鎺㈢储3娆?,need:3,curr:0,icon:'馃攳',reward:50},
+  {id:'d2',n:'寤洪€?鍗囩骇5娆?,need:5,curr:0,icon:'馃彈',reward:100},
+  {id:'d3',n:'鏀跺叆杈惧埌500/s',need:500,curr:0,icon:'鈿?,reward:200},
+  {id:'d4',n:'鏀堕泦1涓柊鐗╁搧',need:1,curr:0,icon:'馃巵',reward:150},
+];
+
+// ==================== 瀛樻。 ====================
+let S=JSON.parse(localStorage.getItem('xzd2')||'{"gold":100,"gems":5,"lvs":{},"found":[],"ach":[],"last":0,"daily":{},"today":"","adx2":0}');
+if(!S.last)S.last=Date.now();S.lvs=S.lvs||{};S.found=S.found||[];S.ach=S.ach||[];S.daily=S.daily||{};S.adx2=S.adx2||0;
+BD.forEach(b=>{if(!(b.id in S.lvs))S.lvs[b.id]=0});
+
+// 姣忔棩閲嶇疆
+const today=new Date().toDateString();
+if(S.today!==today){S.today=today;S.daily={};S.adx2=0;}
+DAILY.forEach(d=>{if(!(d.id in S.daily))S.daily[d.id]=0;});
+
+// ==================== 绂荤嚎鏀剁泭 ====================
+let dt=(Date.now()-S.last)/1000,offAmt=0;
+if(dt>10){let inc=getIncome();offAmt=Math.floor(Math.min(dt,86400)*inc);if(offAmt>0)showOffline(offAmt);}
+
+S.last=Date.now();save();
+
+function showOffline(amt){
+  document.getElementById('oam').textContent='+'+fmt(amt)+' 馃挵';
+  document.getElementById('otm').textContent='绂荤嚎 '+fmtTime(dt);
+  document.getElementById('offline').style.display='flex';
+}
+function fmtTime(s){if(s<60)return Math.floor(s)+'绉?;if(s<3600)return Math.floor(s/60)+'鍒嗛挓';return Math.floor(s/3600)+'灏忔椂'+(Math.floor(s/60)%60)+'鍒?;}
+
+function save(){S.last=Date.now();localStorage.setItem('xzd2',JSON.stringify(S));}
+function fmt(n){return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':Math.floor(n).toString();}
+function getIncome(){let t=0;BD.forEach(b=>{let l=S.lvs[b.id]||0;if(l>0)t+=b.bi+b.ig*(l-1);});return t;}
+function cost(id){let b=BD.find(x=>x.id===id);let lv=S.lvs[id]||0;return Math.floor(b.bc+b.cg*lv*Math.pow(1.08,lv));}
+function totalLv(){let t=0;BD.forEach(b=>t+=S.lvs[b.id]||0);return t;}
+
+// ==================== UI ====================
+function updateUI(){
+  document.getElementById('gld').textContent='馃挵 '+fmt(S.gold);
+  document.getElementById('gms').textContent='馃挔 '+S.gems;
+  document.getElementById('rate').textContent='馃挵 '+getIncome()+'/s';
+  renderBld();
+  checkAch();
+}
+
+function renderBld(){
+  document.getElementById('scroll').innerHTML=BD.map(b=>{
+    let lv=S.lvs[b.id]||0,inc=lv>0?b.bi+b.ig*(lv-1):0,isMax=lv>=b.ml;
+    let tier=TIER[b.t],brd=lv>0?`border-color:rgba(255,215,0,${.05+lv/b.ml*.2})`:'';
+    return `<div class="card${lv===0?' lv0':''}" style="${brd}">
+      <div class="ico">${ICONS[b.id]||'馃彔'}</div>
+      <div class="info">
+        <div class="name">${b.n} <span style="font-size:10px;color:${tier.color}">${tier.name}</span></div>
+        <div class="level">${lv===0?'鏈缓閫?:'Lv.'+lv+'/'+b.ml}</div>
+        <div class="rate">${inc||0}/s</div>
+      </div>
+      ${isMax?`<button class="act max" disabled>MAX</button>`:`<button class="act build" data-bld="${b.id}">${lv===0?'寤?:'鍗?}${fmt(cost(b.id))}</button>`}
+    </div>`;
+  }).join('');
+}
+
+// ==================== 浜嬩欢浠ｇ悊 ====================
+let curBld='',isExplore=false;
+document.getElementById('game').addEventListener('click',function(e){
+  let t=e.target,cls=t.className;
+  // 寤洪€犳寜閽?  if(t.classList.contains('build')){let id=t.dataset.bld;curBld=id;isExplore=false;showBldPopup(id);return;}
+  // 纭
+  if(t.id==='pok'){if(isExplore){hidePopup();return;}if(!curBld||doBuild(curBld))hidePopup();return;}
+  // 鍙栨秷
+  if(t.id==='pca'){hidePopup();return;}
+  // 鎺㈢储
+  if(t.id==='btexp'){doExplore();return;}
+  // 鍥鹃壌
+  if(t.id==='btcol'){toggleCol();return;}
+  // 鎴愬氨
+  if(t.id==='btach'){toggleAch();return;}
+  // 骞垮憡
+  if(t.id==='btad'){doAd();return;}
+  // 鍏抽棴鍥鹃壌
+  if(t.id==='ccb'){toggleCol();return;}
+  // 鍏抽棴鎴愬氨
+  if(t.id==='acb'){toggleAch();return;}
+  // 绂荤嚎棰嗗彇
+  if(t.id==='oc1'){S.gold+=offAmt;save();updateUI();document.getElementById('offline').style.display='none';offAmt=0;return;}
+  if(t.id==='oc2'){S.gold+=offAmt*2;save();updateUI();document.getElementById('offline').style.display='none';offAmt=0;flyText('馃摵 鍙屽€嶏紒');return;}
+});
+
+function showBldPopup(id){
+  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  if(lv===0)showPopup('馃彈 '+b.n,'娑堣€?'+fmt(co)+' 閲戝竵\n寤洪€犲悗浜у嚭 '+b.bi+'/绉?);
+  else{let o=b.bi+b.ig*(lv-1),n=b.bi+b.ig*lv;showPopup('馃敡 鍗囩骇 '+b.n,'Lv.'+lv+' 鈫?'+(lv+1)+'\n娑堣€?'+fmt(co)+' 閲戝竵\n'+o+' 鈫?'+n+'/绉?);}
+}
+function doBuild(id){
+  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  if(lv>=b.ml||S.gold<co)return false;
+  S.gold-=co;S.lvs[id]=lv+1;trackDaily('d2');save();updateUI();
+  flyText((lv===0?'馃彈 寤洪€狅紒':'猬?Lv.'+(lv+1))+' '+b.n);
+  return true;
+}
+
+function showPopup(t,d){document.getElementById('pt').textContent=t;document.getElementById('pd').textContent=d;document.getElementById('pca').style.display=isExplore?'none':'';document.getElementById('ol').classList.add('show');}
+function hidePopup(){document.getElementById('ol').classList.remove('show');curBld='';isExplore=false;}
+
+// ==================== 鎺㈢储 ====================
+function doExplore(){
+  trackDaily('d1');
+  let tl=totalLv(),av=IT.filter(i=>i.u<=tl&&!S.found.includes(i.id));
+  if(av.length===0||Math.random()>0.4){flyText('馃攳 鍐嶆帴鍐嶅帀锛?);S.gold+=Math.max(getIncome(),1)*10;save();updateUI();return;}
+  let ws=av.map(i=>({i,w:100/i.r})),tw=ws.reduce((s,x)=>s+x.w,0),r=Math.random()*tw;
+  for(let w of ws){r-=w.w;if(r<=0){S.found.push(w.i.id);trackDaily('d4');save();isExplore=true;showPopup('馃帀 鍙戠幇鏂扮墿鍝侊紒',w.i.n+' 猸?.repeat(w.i.r)+'\n'+w.i.d);return;}}
+}
+
+// ==================== 鍥鹃壌 & 鎴愬氨 ====================
+let colOpen=false,achOpen=false;
+function toggleCol(){colOpen=!colOpen;let p=document.getElementById('colpanel');p.style.display=colOpen?'block':'none';document.getElementById('scroll').style.display=colOpen?'none':'';if(colOpen)renderCol();}
+function renderCol(){
+  let found=0,html='';IT.forEach(c=>{let disc=S.found.includes(c.id);if(disc)found++;
+  html+=`<div class="citem${disc?' found':' locked'}"><div class="ci">${disc?'猸?.repeat(Math.min(c.r,4)):'鉂?}</div><div class="ctxt"><div class="cn">${disc?c.n+' 猸?.repeat(c.r):'???'}</div><div class="cd">${disc?c.d:'缁х画鎺㈢储瑙ｉ攣'}</div></div></div>`;});
+  document.getElementById('clist').innerHTML=html;document.getElementById('cc').textContent='宸叉敹闆?'+found+'/'+IT.length;
+}
+function toggleAch(){achOpen=!achOpen;let p=document.getElementById('achieve');p.style.display=achOpen?'block':'none';document.getElementById('scroll').style.display=achOpen?'none':'';if(achOpen)renderAch();}
+function renderAch(){
+  document.getElementById('alist').innerHTML=ACH.map(a=>{
+    let done=S.ach.includes(a.id),ok=a.check(S);
+    return `<div class="a-item${done?' done':''}"><div class="ai">${a.icon}</div><div><div class="an">${a.n}</div><div class="ap">${a.d}</div></div><div class="ast">${done?'鉁?宸茶揪鎴?:ok?'馃敁 鍙鍙?:'馃敀'}</div></div>`;
+  }).join('');
+}
+function checkAch(){
+  let changed=false;
+  ACH.forEach(a=>{if(!S.ach.includes(a.id)&&a.check(S)){S.ach.push(a.id);changed=true;flyText('馃弳 '+a.n+' 杈炬垚锛?);}});
+  if(changed)save();
+}
+
+// ==================== 姣忔棩浠诲姟 ====================
+function trackDaily(id){
+  let d=DAILY.find(x=>x.id===id);if(!d)return;
+  S.daily[id]=(S.daily[id]||0)+1;
+  if(S.daily[id]>=d.need){/*濂栧姳*/}
+  save();
+}
+
+// ==================== 骞垮憡 ====================
+function doAd(){let b=Math.max(getIncome(),1)*3600*2;S.gold+=b;save();updateUI();flyText('馃摵 +'+fmt(b)+' 馃挵');}
+
+// ==================== 鐗规晥 ====================
+function flyText(t){
+  let el=document.createElement('div');el.className='fly';el.textContent=t;document.getElementById('game').appendChild(el);
+  setTimeout(()=>el.remove(),1300);
+}
+
+// ==================== 鏄熸槦鑳屾櫙 ====================
+(function(){
+  let c=document.getElementById('stars'),ctx=c.getContext('2d');
+  c.width=375;c.height=667;
+  let stars=[];
+  for(let i=0;i<50;i++)stars.push({x:Math.random()*375,y:Math.random()*667,r:Math.random()*1.5+.5,a:Math.random()*.5+.3,s:Math.random()*.02+.005});
+  function draw(){
+    ctx.clearRect(0,0,375,667);
+    stars.forEach(s=>{s.a+=s.s*(Math.random()>.5?1:-1);s.a=Math.max(.1,Math.min(.9,s.a));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fillStyle=`rgba(255,255,255,${s.a})`;ctx.fill();});
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ==================== 鍒濆鍖?====================
+updateUI();
+setInterval(()=>{
+  S.gold+=getIncome();save();
+  document.getElementById('gld').textContent='馃挵 '+fmt(S.gold);
+},1000);
+
+document.getElementById('ol').addEventListener('click',function(e){if(e.target===this)hidePopup();});
+
+// ==================== 音频系统 ====================
+let ac=null;
+function initAudio(){if(ac)return;ac=new(window.AudioContext||window.webkitAudioContext)();}
+function play(f,hz,dur,type,gain=0.08){if(!ac)initAudio();try{let o=ac.createOscillator(),g=ac.createGain();o.type=type||"sine";o.frequency.setValueAtTime(hz,ac.currentTime);if(f)o.frequency.exponentialRampToValueAtTime(f,ac.currentTime+dur);g.gain.setValueAtTime(gain,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
+function sfxClick(){play(0,600,0.08,"sine",0.06);setTimeout(()=>play(0,800,0.06,"sine",0.04),80);}
+function sfxBuild(){play(0,180,0.15,"triangle",0.1);setTimeout(()=>play(0,360,0.12,"triangle",0.08),100);setTimeout(()=>play(0,540,0.1,"sine",0.07),200);}
+function sfxExplore(){play(0,800,0.1,"sine",0.05);setTimeout(()=>play(0,1200,0.08,"sine",0.04),80);setTimeout(()=>play(0,1600,0.06,"sine",0.03),160);}
+function sfxGold(){play(0,1200,0.06,"triangle",0.05);setTimeout(()=>play(0,1600,0.04,"triangle",0.04),50);setTimeout(()=>play(0,2000,0.04,"triangle",0.03),100);}
+let audioStarted=false;
+document.addEventListener("click",()=>{if(!audioStarted){initAudio();audioStarted=true;}},{once:true});
+
+// ==================== 宝石商城 ====================
+const SHOP=[{id:"s1",n:"宝石小包",d:"100 💠 + 1万 💰",price:"¥6",gems:100,gold:10000},{id:"s2",n:"宝石中包",d:"500 💠 + 5万 💰",price:"¥30",gems:500,gold:50000},{id:"s3",n:"宝石大包",d:"1200 💠 + 15万 💰",price:"¥68",gems:1200,gold:150000},{id:"s4",n:"宝石超包",d:"5000 💠 + 80万 💰",price:"¥198",gems:5000,gold:800000},{id:"s5",n:"永久去广告",d:"移除所有广告",price:"¥12",adfree:true},];
+function updateShop(){
+  document.getElementById("shopgems").textContent=S.gems;
+  let ca=cardActive();let cardEl=document.getElementById("mcard");
+  cardEl.className=ca?"active":"";
+  document.getElementById("mcardbtn").textContent=ca?"月卡有效 ("+Math.ceil((S.cardEnd-Date.now())/86400000)+"天)":"购买月卡";
+  document.getElementById("mcardbtn").onclick=ca?null:buyCard;
+  document.getElementById("shoplist").innerHTML=SHOP.map(s=>`<div class="shop-card"><div class="si">💎</div><div class="sinfo"><div class="sn">${s.n}</div><div class="sd">${s.d}</div></div><button class="sbtn" data-shop="${s.id}">${s.price}</button></div>`).join("");
+}
+function buyShop(id){let s=SHOP.find(x=>x.id===id);if(!s)return;
+  if(s.adfree){S.noads=true;save();sfxGold();flyText("🚫 广告已移除！");updateShop();return;}
+  if(s.gold)S.gold+=s.gold;if(s.gems)S.gems+=s.gems;save();sfxGold();
+  flyText("💎 +"+s.gems+" 💰 +"+fmt(s.gold));updateShop();updateUI();}
+function cardActive(){return (S.cardEnd||0)>Date.now();}
+function buyCard(){if(cardActive()){flyText("👑 月卡仍在有效期内");return;}S.cardEnd=Date.now()+30*86400000;S.gems+=3;save();sfxGold();flyText("👑 月卡已激活！30天");updateShop();}
+
+// ==================== 宝箱 ====================
+let chestAmt=0,chestX2=false;
+function openChest(amt,x2){chestAmt=amt;chestX2=x2;initAudio();
+  document.getElementById("chestResult").textContent=fmt(amt)+" 💰";
+  document.getElementById("chestClose").textContent=x2?"💰 领取":"📺 双倍领取";
+  document.getElementById("chestSkip").style.display=x2?"none":"";
+  document.getElementById("chest-overlay").style.display="flex";play(0,300,0.6,"sine",0.06);
+  setTimeout(()=>play(0,600,0.4,"sine",0.05),300);setTimeout(()=>play(0,900,0.3,"sine",0.04),600);}
+function closeChest(){document.getElementById("chest-overlay").style.display="none";}
+
+// ==================== 每日任务 ====================
+function renderDaily(){
+  document.getElementById("dlist").innerHTML=DAILY.map(d=>{
+    let curr=S.daily[d.id]||0,pct=Math.min(100,Math.floor(curr/d.need*100)),done=curr>=d.need;
+    return `<div class="daily-item${done?" done":""}"><div class="di">${d.icon}</div><div class="dinfo"><div class="dn">${d.n}</div><div class="dp">${curr}/${d.need}</div><div class="dbar"><div class="dfill" style="width:${pct}%"></div></div></div><div class="dreward">${done?"✅":"💠 +"+d.reward}</div></div>`;
+  }).join("");
+}
+
+// ==================== 面板管理 ====================
+let shopOpen=false,dailyOpen=false;
+function toggleShop(){shopOpen=!shopOpen;
+  let p=document.getElementById("shoppanel");p.style.display=shopOpen?"block":"none";
+  document.getElementById("scroll").style.display=shopOpen?"none":"";
+  if(shopOpen)updateShop();}
+function toggleDaily(){dailyOpen=!dailyOpen;
+  let p=document.getElementById("dailypanel");p.style.display=dailyOpen?"block":"none";
+  document.getElementById("scroll").style.display=dailyOpen?"none":"";
+  if(dailyOpen)renderDaily();}
+
+// 扩展事件代理
+(function(){
+  let game=document.getElementById("game");
+  game.addEventListener("click",function(e){
+    let t=e.target;
+    // 商城按钮
+    if(t.id==="btshop"){toggleShop();return;}
+    // 每日任务
+    if(t.id==="btdaily"){toggleDaily();sfxClick();return;}
+    // 关闭商城
+    if(t.id==="scb"){toggleShop();return;}
+    // 关闭每日
+    if(t.id==="dcb"){toggleDaily();return;}
+    // 商城购买
+    if(t.classList.contains("sbtn")){buyShop(t.dataset.shop);return;}
+    // 宝箱
+    if(t.id==="chestClose"){if(chestX2){S.gold+=chestAmt;save();}else{S.gold+=chestAmt*2;save();}
+      updateUI();sfxGold();closeChest();return;}
+    if(t.id==="chestSkip"){S.gold+=chestAmt;save();updateUI();sfxGold();closeChest();return;}
+  });
+  // 覆盖原事件处理器——改为追加音效
+  let origBuild=showBldPopup;let origExplore=doExplore;let origAd=doAd;
+  window._showBldPopup=function(id){sfxClick();origBuild(id);};
+  window._doExplore=function(){sfxClick();origExplore();};
+  window._doAd=function(){sfxClick();origAd();};
+})();
+
+console.log("熊爪小岛 完整商业版 已加载！音效+商城+月卡+宝箱+每日任务");
+function claimChest(){if(chestX2){S.gold+=chestAmt}else{S.gold+=chestAmt*2};save();updateUI();sfxGold();closeChest();}
+function claimChestSkip(){S.gold+=chestAmt;save();updateUI();sfxGold();closeChest();}</script>
+</body>
+</html>
+
