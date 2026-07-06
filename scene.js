@@ -40,7 +40,7 @@ function openScene(bid) {
       (isMax ? '<button class="ubtn max" disabled>已满级</button>' : '<button class="ubtn" id="scn-upgrade">升级 ' + fmt(cost(bid)) + '</button>') +
     '</div></div>';
   panel.style.display = 'block';
-  setTimeout(function(){ var bd=document.getElementById('scn-body'); var rt=document.getElementById('scn-root'); if(rt){rt.style.flexDirection='column'} if(bd){bd.style.width='100%';bd.style.display='block'} }, 10);
+  setTimeout(function(){ var bd=document.getElementById('scn-body'); var rt=document.getElementById('scn-root'); if(rt){rt.style.flexDirection='column'} if(bd){bd.style.width='100%';bd.style.display='block';bd.style.position='relative';bd.style.overflow='hidden'} }, 10);
 
   renderScene(bid, lv);
   document.getElementById('scn-back').onclick = closeScene;
