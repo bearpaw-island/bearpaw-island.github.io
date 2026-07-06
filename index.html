@@ -6,673 +6,682 @@
 <title>熊爪小岛</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#0d0d1a;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;font-family:"Microsoft YaHei",sans-serif}
-#game{width:375px;height:667px;position:relative;overflow:hidden;border-radius:14px;box-shadow:0 0 40px rgba(80,60,200,.3)}
-.bg{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a 0%,#141435 30%,#1a1a3e 60%,#0f0f28 100%);z-index:0}
-#top{z-index:10;position:absolute;top:0;left:0;right:0;height:56px;background:linear-gradient(180deg,rgba(30,20,50,.98),rgba(25,18,45,.95));display:flex;align-items:center;padding:0 10px;border-bottom:1px solid rgba(255,215,0,.15);gap:6px}
-#gld,#gms{color:#ffd700;font-size:15px;font-weight:bold;text-shadow:0 0 8px rgba(255,215,0,.3)}
-#gms{color:#6cf;font-size:13px}
-#btlvl{font-size:11px;color:#888;margin-left:auto}
-#rate{position:absolute;top:56px;left:0;right:0;text-align:center;color:#8a8;font-size:11px;z-index:10;background:rgba(10,10,42,.6)}
-#scroll{z-index:5;position:absolute;top:74px;bottom:68px;left:0;right:0;overflow-y:auto;padding:6px 8px;scroll-behavior:smooth}
+body{background:#0a0a14;display:flex;justify-content:center;align-items:center;height:100vh;overflow:hidden;font-family:"PingFang SC","Microsoft YaHei","Helvetica Neue",sans-serif}
+#game{width:375px;height:667px;position:relative;overflow:hidden;border-radius:16px;box-shadow:0 0 60px rgba(100,80,200,.25)}
+/* 星空背景 */
+.bg{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0b0b1e 0%,#12123a 25%,#161645 50%,#0f0f2e 75%,#0a0a1a 100%);z-index:0}
+.bg::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(1px 1px at 10% 15%, #fff3, transparent),radial-gradient(1px 1px at 25% 5%, #fff2, transparent),radial-gradient(1.5px 1.5px at 50% 20%, #fff4, transparent),radial-gradient(1px 1px at 70% 8%, #fff2, transparent),radial-gradient(1px 1px at 85% 18%, #fff3, transparent),radial-gradient(1.5px 1.5px at 15% 30%, #fff2, transparent),radial-gradient(1px 1px at 60% 35%, #fff1, transparent),radial-gradient(1px 1px at 40% 12%, #fff3, transparent),radial-gradient(1px 1px at 90% 25%, #fff2, transparent),radial-gradient(1.5px 1.5px at 30% 42%, #fff1, transparent);z-index:1}
+/* 顶栏 - 资源 */
+#top{z-index:10;position:absolute;top:0;left:0;right:0;height:48px;background:linear-gradient(180deg,rgba(20,16,40,.95) 0%,rgba(18,14,38,.9) 100%);display:flex;align-items:center;padding:0 14px;border-bottom:1px solid rgba(255,215,0,.1)}
+#top .res{display:flex;align-items:center;gap:14px;flex:1}
+#top .r{display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700}
+#top .r.gold{color:#ffd700}
+#top .r.gem{color:#6cc}
+#top .r .ri{font-size:16px}
+#top .lv{font-size:11px;color:#666;background:rgba(255,255,255,.06);padding:2px 8px;border-radius:10px}
+/* 收入条 */
+#rate{z-index:10;position:absolute;top:48px;left:0;right:0;text-align:center;color:#6a6;font-size:10px;padding:2px 0;background:rgba(10,10,30,.5);letter-spacing:.5px}
+#rate b{color:#8c8}
+/* 滚动区 */
+#scroll{z-index:5;position:absolute;top:64px;bottom:52px;left:0;right:0;overflow-y:auto;padding:8px 10px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch}
 #scroll::-webkit-scrollbar{width:0}
-#bottom{z-index:10;position:absolute;bottom:0;left:0;right:0;height:68px;background:linear-gradient(0deg,rgba(25,18,45,.98),rgba(30,20,50,.95));display:flex;justify-content:space-evenly;align-items:center;border-top:1px solid rgba(255,215,0,.15);flex-wrap:wrap;gap:1px;padding:2px 2px}
-.bbtn{padding:5px 2px;border-radius:8px;font-size:9px;font-weight:bold;cursor:pointer;border:none;color:#fff;transition:transform .15s,filter .15s;flex:1;min-width:40px;line-height:1.2}
-.bbtn:active{transform:scale(.92);filter:brightness(1.3)}
-.bbtn.e{background:linear-gradient(135deg,#3a8,#2a6)}
-.bbtn.c{background:linear-gradient(135deg,#48a,#369)}
-.bbtn.d{background:linear-gradient(135deg,#a3a,#825)}
-.bbtn.a{background:linear-gradient(135deg,#c84,#a63)}
-.bbtn.s{background:linear-gradient(135deg,#c84,#a63)}
-.bbtn.t{background:linear-gradient(135deg,#fc6,#c84)}
-.bbtn.f{background:linear-gradient(135deg,#e55,#933)}
-.bbtn.g{background:linear-gradient(135deg,#58b,#257)}
-.bbtn.h{background:linear-gradient(135deg,#e8a,#713)}
-.card{background:linear-gradient(135deg,rgba(45,35,70,.92),rgba(35,28,58,.92));border-radius:12px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.05);transition:transform .2s,box-shadow .2s}
-.card:active{transform:translateX(2px);box-shadow:0 2px 12px rgba(100,80,200,.15)}
-.card.lv0 .name{color:#aaa}
-.card .ico{font-size:26px;margin-right:8px;width:36px;text-align:center;filter:drop-shadow(0 0 4px rgba(255,200,50,.3));color-scheme:normal;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
-.card .info{flex:1}
-.card .name{color:#ffd700;font-size:13px;font-weight:bold}
-.card .level{color:#999;font-size:10px}
-.card .rate{color:#8a8;font-size:9px}
-.card .act{padding:6px 0;width:56px;border-radius:7px;font-size:10px;font-weight:bold;cursor:pointer;border:none;color:#fff;text-align:center}
-.card .act:active{transform:scale(.93)}
-.act.build{background:linear-gradient(135deg,#5a8,#3a6)}
-.act.max{background:#333;color:#666;cursor:default}
-.overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.65);display:none;justify-content:center;align-items:center;z-index:100}
+/* 底部导航 */
+#bottom{z-index:10;position:absolute;bottom:0;left:0;right:0;height:52px;background:rgba(16,14,32,.98);display:flex;justify-content:space-around;align-items:center;border-top:1px solid rgba(255,255,255,.06)}
+.nav-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:44px;border-radius:10px;font-size:10px;font-weight:600;cursor:pointer;border:none;color:#777;background:transparent;transition:all .2s}
+.nav-btn:active{transform:scale(.9);background:rgba(255,255,255,.05)}
+.nav-btn .ni{font-size:17px;line-height:1}
+.nav-btn.active{color:#ffd700}
+.nav-btn.more-btn{color:#aaa}
+/* 更多菜单浮层 */
+#more-menu{position:absolute;bottom:58px;right:8px;background:rgba(20,18,40,.98);border-radius:14px;padding:8px;display:none;z-index:80;border:1px solid rgba(255,215,0,.15);box-shadow:0 4px 24px rgba(0,0,0,.5);min-width:140px}
+#more-menu .mm-item{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;color:#bbb;cursor:pointer;border:none;background:transparent;width:100%;text-align:left;transition:background .15s}
+#more-menu .mm-item:active{background:rgba(255,255,255,.08)}
+#more-menu .mm-item .mmi{font-size:18px}
+/* 建筑卡片 */
+.card{background:linear-gradient(135deg,rgba(28,24,50,.88),rgba(22,19,42,.88));border-radius:14px;padding:12px;margin-bottom:7px;display:flex;align-items:center;border:1px solid rgba(255,255,255,.04);transition:transform .15s,box-shadow .15s;cursor:default}
+.card:active{transform:scale(.98);box-shadow:0 2px 16px rgba(100,80,200,.1)}
+.card .ico{font-size:32px;margin-right:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border-radius:12px;font-family:'Segoe UI Emoji','Apple Color Emoji','Noto Color Emoji',sans-serif}
+.card .info{flex:1;min-width:0}
+.card .toprow{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.card .name{color:#e0d8f0;font-size:14px;font-weight:700}
+.card .tier{font-size:9px;padding:1px 6px;border-radius:4px;font-weight:600}
+.card .tier.t1{color:#888;background:rgba(136,136,136,.1)}
+.card .tier.t2{color:#6cf;background:rgba(102,204,255,.1)}
+.card .tier.t3{color:#ffd700;background:rgba(255,215,0,.1)}
+.card .subrow{display:flex;align-items:center;justify-content:space-between}
+.card .level{color:#888;font-size:11px}
+.card .rate{color:#6a6;font-size:10px}
+.card .act{width:56px;height:36px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;border:none;color:#fff;transition:all .15s;margin-left:6px}
+.card .act:active{transform:scale(.92)}
+.act.build{background:linear-gradient(135deg,#5b8,#3a6)}
+.act.max{background:#222;color:#555;cursor:default}
+.card.lv0 .name{color:#999}
+.card.lv0 .rate{color:#555}
+/* 弹窗 */
+.overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:100}
 .overlay.show{display:flex}
-.popup{background:linear-gradient(180deg,#2a2a4e,#222242);border-radius:16px;padding:22px 20px;text-align:center;max-width:290px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.15);animation:popIn .25s ease-out}
+.popup{background:linear-gradient(180deg,#252550,#1c1c40);border-radius:18px;padding:28px 24px;text-align:center;max-width:300px;width:90%;box-shadow:0 12px 48px rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.12);animation:popIn .25s ease-out}
 @keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
-.popup .pt{font-size:20px;color:#ffd700;margin-bottom:8px}
-.popup .pd{color:#bbb;font-size:13px;margin-bottom:16px;white-space:pre-line;line-height:1.5}
-.popup .pb{display:flex;gap:8px;justify-content:center}
-.pbtn{padding:8px 24px;border-radius:10px;font-size:14px;font-weight:bold;border:none;color:#fff;cursor:pointer;transition:transform .15s}
-.pbtn:active{transform:scale(.94)}
-.pbtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
-.pbtn.cancel{background:linear-gradient(135deg,#855,#633)}
-.panel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0a0a2a,#141435);display:none;z-index:50;overflow-y:auto;padding:20px 12px}
-.panel .ptitle{text-align:center;color:#ffd700;font-size:20px;font-weight:bold;margin-bottom:4px}
-.panel .psub{text-align:center;color:#888;font-size:12px;margin-bottom:14px}
-.pitem{background:rgba(40,30,65,.7);border-radius:10px;padding:12px 14px;margin-bottom:6px;border:1px solid rgba(255,255,255,.04)}
-.pitem .pi{font-size:22px;margin-right:10px}
+.popup .pt{font-size:20px;color:#ffd700;margin-bottom:10px;font-weight:700}
+.popup .pd{color:#bbb;font-size:14px;margin-bottom:20px;white-space:pre-line;line-height:1.6}
+.popup .pb{display:flex;gap:10px;justify-content:center}
+.pbtn{padding:10px 26px;border-radius:12px;font-size:14px;font-weight:700;border:none;color:#fff;cursor:pointer;transition:all .15s}
+.pbtn:active{transform:scale(.94);filter:brightness(1.2)}
+.pbtn.ok{background:linear-gradient(135deg,#5b8,#3a6)}
+.pbtn.cancel{background:linear-gradient(135deg,#755,#533)}
+/* 全屏面板 */
+.panel{position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,#0b0b1e,#161645);display:none;z-index:50;overflow-y:auto;padding:16px 14px 70px;-webkit-overflow-scrolling:touch}
+.panel::-webkit-scrollbar{width:0}
+.panel .ptitle{text-align:center;color:#ffd700;font-size:20px;font-weight:700;margin-bottom:4px;padding-top:8px}
+.panel .psub{text-align:center;color:#777;font-size:12px;margin-bottom:14px}
+.panel .close-bar{position:sticky;bottom:0;text-align:center;padding:16px 0 8px;background:linear-gradient(0deg,rgba(11,11,30,1),rgba(11,11,30,0))}
+.pitem{background:rgba(28,24,50,.7);border-radius:12px;padding:12px 14px;margin-bottom:6px;border:1px solid rgba(255,255,255,.04)}
 .pitem.flex{display:flex;align-items:center}
-.pitem .ptx{flex:1}
-.pitem .pn{font-size:14px;font-weight:bold}
-.pitem .pd{font-size:10px;color:#777;margin-top:2px}
-.pitem .pr{color:#c84;font-size:12px;font-weight:bold;min-width:50px;text-align:right}
-.pitem.locked .pn{color:#555}
+.pitem .pi{font-size:24px;margin-right:10px;flex-shrink:0}
+.pitem .ptx{flex:1;min-width:0}
+.pitem .pn{font-size:14px;font-weight:700}
+.pitem .pd{font-size:11px;color:#777;margin-top:2px}
+.pitem .pr{color:#c84;font-size:12px;font-weight:700;text-align:right;flex-shrink:0}
+.pitem.locked .pn{color:#666}
 .pitem.found .pn{color:#ffd700}
+/* 商城 */
+.shop-card{background:rgba(28,24,50,.85);border-radius:12px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;border:1px solid rgba(255,215,0,.08)}
+.shop-card .si{font-size:28px;margin-right:10px}
+.shop-card .si2{flex:1}
+.shop-card .sn{color:#ffd700;font-size:13px;font-weight:700}
+.shop-card .sd{color:#999;font-size:10px;margin-top:2px}
+.shop-card .sbtn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
+/* 月卡 */
+#mcard{background:linear-gradient(135deg,rgba(200,130,60,.15),rgba(160,100,40,.1));border:1px solid rgba(255,180,60,.2);border-radius:14px;padding:16px;margin-bottom:10px;text-align:center}
+#mcard .mt{font-size:17px;color:#fc6;font-weight:700}
+#mcard .md{color:#aaa;font-size:11px;margin:4px 0}
+#mcard .mb{color:#ffd700;font-size:22px;font-weight:700;margin:8px 0}
+#mcard .mbtn{padding:10px 28px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
+#mcard.active{border-color:rgba(100,200,100,.3);background:rgba(40,80,40,.15)}
+#mcard.active .mt{color:#8b8}
+/* 战斗 */
+#battle-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);display:none;z-index:150;padding:24px 16px;justify-content:center;align-items:center}
+#battle-ui{text-align:center;color:#fff;width:100%}
+#battle-ui .btitle{font-size:22px;color:#ff6347;font-weight:700;margin-bottom:10px}
+#battle-ui .bhp{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px 0}
+#battle-ui .bhp-bar{width:180px;height:8px;background:#333;border-radius:4px;overflow:hidden}
+#battle-ui .bhp-fill{height:100%;background:#e55;transition:width .3s}
+#battle-ui .bhp-fill.me{background:#4a8}
+#battle-ui .blog{max-height:160px;overflow-y:auto;font-size:12px;color:#aaa;margin:12px 0;text-align:left;padding:10px;background:rgba(0,0,0,.3);border-radius:10px}
+#battle-ui .bbtn-area{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
+/* 小游戏 */
+#minigame-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.88);display:none;z-index:150;padding:20px;justify-content:center;align-items:center}
+#mg-ui{text-align:center;color:#fff;width:100%}
+#mg-ui .mgtitle{font-size:22px;color:#ffd700;font-weight:700;margin-bottom:6px}
+#mg-ui .mginfo{color:#aaa;font-size:13px;margin-bottom:12px}
+#mg-ui .mg-area{position:relative;background:rgba(0,0,0,.4);border-radius:16px;height:280px;margin:10px 0;overflow:hidden}
+#mg-ui .mg-hit{position:absolute;width:54px;height:54px;border-radius:50%;background:rgba(255,200,50,.25);border:2px solid #ffd700;cursor:pointer;animation:mgPop .75s ease-out forwards}
+#mg-ui .mg-hit.fast{animation:mgPop .45s ease-out forwards}
+@keyframes mgPop{0%{transform:scale(0)}70%{transform:scale(1.1)}100%{transform:scale(0)}}
+#mg-ui .mg-score{font-size:36px;color:#ffd700;font-weight:700;margin:8px 0}
+#mg-ui .mg-timer{color:#e55;font-size:20px;font-weight:700}
+/* 钓鱼 */
+#fish-area{height:140px;position:relative;background:linear-gradient(180deg,#1a3050,#0a1a30);border-radius:12px;margin:10px 0}
+#fish-area .fish-target{position:absolute;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-size:28px;left:50%;transform:translateX(-50%);transition:top .3s}
+#fish-area .fish-zone{position:absolute;width:80px;height:3px;background:#6cf;left:50%;transform:translateX(-50%);border-radius:2px;transition:top .2s;box-shadow:0 0 8px #6cf}
+.fish-result{text-align:center;color:#ffd700;font-size:14px;font-weight:700;min-height:20px}
+/* 随机事件 */
+#evpop{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(180deg,#2a2a4e,#1c1c3e);border:2px solid rgba(255,215,0,.5);border-radius:18px;padding:24px 20px;text-align:center;color:#fff;z-index:90;display:none;width:290px;animation:popIn .3s ease-out;box-shadow:0 0 40px rgba(255,200,0,.15)}
+#evpop .evicon{font-size:56px;margin-bottom:8px}
+#evpop .evtitle{font-size:18px;color:#ffd700;font-weight:700;margin-bottom:8px}
+#evpop .evdesc{font-size:13px;color:#bbb;margin-bottom:16px;line-height:1.6}
+#evpop .evbtn{padding:10px 36px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5b8,#3a6)}
+/* 合成/伙伴/排行 */
+.recipe-item{background:rgba(28,24,50,.7);border-radius:12px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center}
+.recipe-item .ri{font-size:26px;margin-right:10px}
+.recipe-item .rtx{flex:1}
+.recipe-item .rn{color:#ffd700;font-size:13px;font-weight:700}
+.recipe-item .rd{color:#888;font-size:10px}
+.recipe-item .rbtn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#96c,#74a)}
+.recipe-item .rbtn:active{transform:scale(.94)}
+.rbtn.disabled{background:#333;color:#555;cursor:not-allowed}
+.lb-item{background:rgba(28,24,50,.7);border-radius:10px;padding:10px 14px;margin-bottom:4px;display:flex;align-items:center}
+.lb-rank{font-size:18px;color:#ffd700;width:30px;font-weight:700}
+.lb-name{flex:1;font-size:14px;color:#ddd}
+.lb-gold{font-size:12px;color:#fc6}
+/* 宝箱/离线 */
+#chest-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.75);display:none;justify-content:center;align-items:center;z-index:200}
+.ccont{text-align:center;animation:popIn .3s ease-out}
+.cchest{font-size:72px;animation:bounce .5s ease-in-out infinite alternate}
+@keyframes bounce{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.08) translateY(-8px)}}
+.cres{color:#ffd700;font-size:22px;font-weight:700;margin:10px 0}
+.cbtn{padding:10px 28px;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5b8,#3a6);margin-top:6px}
+#offline{z-index:70;position:absolute;top:0;left:0;right:0;bottom:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.85)}
+#offline .om{background:linear-gradient(180deg,#1c1c3e,#161638);border-radius:18px;padding:28px;text-align:center;max-width:280px;border:1px solid rgba(255,215,0,.15)}
+#offline .ot{font-size:18px;color:#ffd700;margin-bottom:8px}
+#offline .oe{font-size:30px;color:#ffd700;font-weight:700;margin:12px 0}
+#offline .obtn{padding:10px 28px;border-radius:12px;font-size:14px;font-weight:700;border:none;cursor:pointer;margin:5px;color:#fff}
+#offline .obtn.ok{background:linear-gradient(135deg,#5b8,#3a6)}
+#offline .obtn.dbl{background:linear-gradient(135deg,#c84,#a63);box-shadow:0 0 12px rgba(255,160,40,.3)}
+/* 每日任务进度 */
 .daily-bar{width:100%;height:5px;background:#333;border-radius:3px;margin-top:4px;overflow:hidden}
 .daily-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#4a8,#6cf);transition:width .3s}
 .daily-done .pn{color:#8b8!important}
-.shop-card{background:rgba(30,25,60,.95);border-radius:12px;padding:12px;margin-bottom:6px;display:flex;align-items:center;border:1px solid rgba(255,215,0,.08)}
-.shop-card .si{font-size:24px;margin-right:10px}
-.shop-card .si2{flex:1}
-.shop-card .sn{color:#ffd700;font-size:13px;font-weight:bold}
-.shop-card .sd{color:#999;font-size:10px}
-.shop-card .sbtn{padding:6px 14px;border-radius:8px;font-size:12px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
-.shop-card .sbtn:active{transform:scale(.94)}
-#mcard{background:linear-gradient(135deg,rgba(200,130,60,.2),rgba(160,100,40,.15));border:1px solid rgba(255,180,60,.3);border-radius:12px;padding:14px;margin-bottom:8px;text-align:center}
-#mcard .mt{font-size:16px;color:#fc6;font-weight:bold}
-#mcard .md{color:#bbb;font-size:11px;margin:4px 0}
-#mcard .mb{color:#ffd700;font-size:22px;font-weight:bold;margin:6px 0}
-#mcard .mbtn{padding:8px 24px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#c84,#a63)}
-#mcard.active{border-color:rgba(100,200,100,.4);background:rgba(40,80,40,.2)}
-#mcard.active .mt{color:#8b8}
-#chest-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:200}
-.ccont{text-align:center;animation:popIn .3s ease-out}
-.cchest{font-size:70px;animation:bounce .6s ease-in-out infinite alternate}
-@keyframes bounce{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.1) translateY(-10px)}}
-.cres{color:#ffd700;font-size:20px;font-weight:bold;margin:10px 0}
-.cbtn{padding:10px 30px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5a8,#3a6);margin-top:6px}
-#offline{z-index:70;position:absolute;top:0;left:0;right:0;bottom:0;display:none;justify-content:center;align-items:center;background:rgba(0,0,0,.8)}
-#offline .om{background:linear-gradient(180deg,#1a1a3e,#141435);border-radius:16px;padding:24px;text-align:center;max-width:270px;border:1px solid rgba(255,215,0,.2)}
-#offline .ot{font-size:18px;color:#ffd700;margin-bottom:6px}
-#offline .oe{font-size:28px;color:#ffd700;font-weight:bold;margin:10px 0}
-#offline .obtn{padding:10px 30px;border-radius:10px;font-size:14px;font-weight:bold;border:none;cursor:pointer;margin:4px;color:#fff}
-#offline .obtn.ok{background:linear-gradient(135deg,#5a8,#3a6)}
-#offline .obtn.dbl{background:linear-gradient(135deg,#c84,#a63);animation:pulse 1.5s ease-in-out infinite}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(200,130,60,.4)}50%{box-shadow:0 0 0 12px rgba(200,130,60,0)}}
-/* 战斗面板 */
-#battle-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;z-index:150;padding:20px}
-#battle-ui{text-align:center;color:#fff}
-#battle-ui .btitle{font-size:20px;color:#ff6347;font-weight:bold;margin-bottom:12px}
-#battle-ui .bhp{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0}
-#battle-ui .bhp-bar{width:200px;height:10px;background:#333;border-radius:5px;overflow:hidden}
-#battle-ui .bhp-fill{height:100%;background:#e55;transition:width .3s}
-#battle-ui .bhp-fill.me{background:#4a8}
-#battle-ui .blog{max-height:200px;overflow-y:auto;font-size:12px;color:#aaa;margin:12px 0;text-align:left;padding:8px;background:rgba(0,0,0,.3);border-radius:8px}
-#battle-ui .bbtn-area{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-#battle-ui .btla{font-size:12px;color:#888}
-/* 小游戏 */
-#minigame-overlay{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.85);display:none;z-index:150;padding:20px}
-#mg-ui{text-align:center;color:#fff;height:100%;display:flex;flex-direction:column;justify-content:center}
-#mg-ui .mgtitle{font-size:22px;color:#ffd700;font-weight:bold;margin-bottom:8px}
-#mg-ui .mginfo{color:#aaa;font-size:13px;margin-bottom:16px}
-#mg-ui .mg-area{flex:1;position:relative;background:rgba(0,0,0,.3);border-radius:16px;margin:10px 0;overflow:hidden}
-#mg-ui .mg-hit{position:absolute;width:60px;height:60px;border-radius:50%;background:rgba(255,215,0,.3);border:2px solid #ffd700;cursor:pointer;transition:transform .1s;animation:mgPop .8s ease-out forwards}
-#mg-ui .mg-hit.fast{animation:mgPop .5s ease-out forwards}
-#mg-ui .mg-hit:active{transform:scale(1.3);background:rgba(255,100,0,.5)}
-@keyframes mgPop{0%{transform:scale(0)}80%{transform:scale(1)}100%{transform:scale(0)}}
-#mg-ui .mg-score{font-size:32px;color:#ffd700;font-weight:bold;margin:8px 0}
-#mg-ui .mg-timer{color:#e55;font-size:18px;font-weight:bold}
-/* 钓鱼 */
-#fish-area{height:150px;position:relative;background:linear-gradient(180deg,#1a3a5a,#0a2a4a);border-radius:12px;margin:10px 0}
-#fish-area .fish-target{position:absolute;width:40px;height:40px;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><text y="30" font-size="30">🎣</text></svg>') center/contain;left:50%;transform:translateX(-50%);transition:top .3s}
-#fish-area .fish-zone{position:absolute;width:80px;height:4px;background:#6cf;left:50%;transform:translateX(-50%);border-radius:2px;transition:top .2s}
-#fish-area .fish-result{text-align:center;color:#ffd700;font-size:14px;font-weight:bold}
-/* 事件通知 */
-#evpop{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:linear-gradient(180deg,#333,#222);border:2px solid #ffd700;border-radius:16px;padding:20px;text-align:center;color:#fff;z-index:90;display:none;width:280px;animation:popIn .3s ease-out;box-shadow:0 0 30px rgba(255,200,0,.2)}
-#evpop .evicon{font-size:50px;margin-bottom:8px}
-#evpop .evtitle{font-size:18px;color:#ffd700;font-weight:bold;margin-bottom:6px}
-#evpop .evdesc{font-size:12px;color:#bbb;margin-bottom:14px;line-height:1.5}
-#evpop .evbtn{padding:10px 30px;border-radius:10px;font-size:14px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#5a8,#3a6)}
-/* 合成 */
-.recipe-item{background:rgba(40,30,65,.7);border-radius:10px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center}
-.recipe-item .ri{font-size:24px;margin-right:10px}
-.recipe-item .rtx{flex:1}
-.recipe-item .rn{color:#ffd700;font-size:13px;font-weight:bold}
-.recipe-item .rd{color:#888;font-size:10px}
-.recipe-item .rbtn{padding:6px 14px;border-radius:8px;font-size:11px;font-weight:bold;cursor:pointer;border:none;color:#fff;background:linear-gradient(135deg,#a6c,#84a)}
-.rbtn.disabled{background:#333;color:#666;cursor:not-allowed}
-/* 排行榜 */
-.lb-item{background:rgba(30,25,60,.85);border-radius:8px;padding:10px 14px;margin-bottom:4px;display:flex;align-items:center}
-.lb-rank{font-size:18px;color:#ffd700;width:30px;font-weight:bold}
-.lb-name{flex:1;font-size:14px;color:#ddd}
-.lb-gold{font-size:12px;color:#fc6}
-.fly{position:absolute;left:50%;transform:translateX(-50%);color:#ffd700;font-size:16px;font-weight:bold;pointer-events:none;animation:flyUp 1.2s forwards;z-index:200}
-@keyframes flyUp{0%{opacity:1;bottom:180px}100%{opacity:0;bottom:320px}}
-/* 页面指示器 */
-.tabs{display:flex;gap:2px;margin-bottom:8px;flex-wrap:wrap}
-.tab{padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(40,30,65,.5);color:#888}
-.tab.active{background:rgba(100,80,180,.4);color:#ffd700;border-color:rgba(255,215,0,.3)}
+/* 飘字 */
+.fly{position:absolute;left:50%;transform:translateX(-50%);color:#ffd700;font-size:18px;font-weight:700;pointer-events:none;animation:flyUp 1.3s forwards;z-index:200;text-shadow:0 0 8px rgba(255,200,0,.5)}
+@keyframes flyUp{0%{opacity:1;bottom:180px}100%{opacity:0;bottom:360px}}
+/* 通用面板tab */
+.tab-bar{display:flex;gap:4px;margin-bottom:12px;flex-wrap:wrap}
+.tab-chip{padding:4px 12px;border-radius:8px;font-size:11px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(30,24,55,.6);color:#888;transition:all .15s}
+.tab-chip.active{background:rgba(100,60,180,.4);color:#ffd700;border-color:rgba(255,215,0,.25)}
 </style>
 </head>
 <body>
 <div id="game">
   <div class="bg"></div>
-  <div id="top"><span id="gld">💰 100</span><span id="gms">💠 5</span><span id="btlvl"></span></div>
-  <div id="rate">💰 0/s</div>
+  <div id="top">
+    <div class="res"><span class="r gold"><span class="ri">💰</span><span id="gld">100</span></span><span class="r gem"><span class="ri">💠</span><span id="gms">5</span></span></div>
+    <span class="lv" id="btlvl">Lv.0</span>
+  </div>
+  <div id="rate">💨 <b id="rateval">0</b>/秒</div>
   <div id="scroll"></div>
   <div id="bottom">
-    <button class="bbtn e" id="btexp">🔍<br>探索</button>
-    <button class="bbtn f" id="btbat">⚔️<br>战斗</button>
-    <button class="bbtn g" id="btplay">🎮<br>小游戏</button>
-    <button class="bbtn h" id="btsyn">🔮<br>合成</button>
-    <button class="bbtn c" id="btcol">📖<br>图鉴</button>
-    <button class="bbtn d" id="btach">🏆<br>成就</button>
-    <button class="bbtn a" id="btad">📺<br>广告</button>
-    <button class="bbtn s" id="btshop">💎<br>商城</button>
-    <button class="bbtn t" id="btdaily">📋<br>每日</button>
+    <button class="nav-btn active" data-tab="home"><span class="ni">🏠</span>岛屿</button>
+    <button class="nav-btn" data-tab="explore"><span class="ni">🔍</span>探索</button>
+    <button class="nav-btn" data-tab="battle"><span class="ni">⚔️</span>战斗</button>
+    <button class="nav-btn" data-tab="game"><span class="ni">🎮</span>游乐</button>
+    <button class="nav-btn more-btn" id="more-btn"><span class="ni">⋯</span>更多</button>
+  </div>
+  <div id="more-menu">
+    <button class="mm-item" data-action="synth"><span class="mmi">🔮</span>合成工坊</button>
+    <button class="mm-item" data-action="pet"><span class="mmi">🐾</span>伙伴之家</button>
+    <button class="mm-item" data-action="col"><span class="mmi">📖</span>收集图鉴</button>
+    <button class="mm-item" data-action="ach"><span class="mmi">🏆</span>成就殿堂</button>
+    <button class="mm-item" data-action="lb"><span class="mmi">🏅</span>排行榜</button>
+    <button class="mm-item" data-action="daily"><span class="mmi">📋</span>每日任务</button>
+    <button class="mm-item" data-action="shop"><span class="mmi">💎</span>宝石商城</button>
+    <button class="mm-item" data-action="ad"><span class="mmi">📺</span>观看广告</button>
   </div>
   <div id="evpop"><div class="evicon"></div><div class="evtitle"></div><div class="evdesc"></div><button class="evbtn">确认</button></div>
   <div class="overlay" id="ol"><div class="popup"><div class="pt" id="pt"></div><div class="pd" id="pd"></div><div class="pb"><button class="pbtn ok" id="pok">确认</button><button class="pbtn cancel" id="pca">取消</button></div></div></div>
-  <div class="panel" id="colpanel"><div class="ptitle">📖 图鉴收集</div><div class="psub" id="cc"></div><div id="clist"></div><div style="text-align:center;padding:20px"><button class="pbtn cancel" id="ccb">关闭</button></div></div>
-  <div class="panel" id="achieve"><div class="ptitle">🏆 成就</div><div id="alist"></div><div style="text-align:center;padding:20px"><button class="pbtn cancel" id="acb">关闭</button></div></div>
-  <div class="panel" id="shoppanel" style="z-index:51"><div class="ptitle">💎 宝石商城</div><div class="psub">当前 💠 <span id="shopgems">5</span></div><div id="mcard"><div class="mt">👑 黄金月卡</div><div class="md">每日领取 💰10万 + 💠3 + 广告自动跳过</div><div class="mb">30元/30天</div><button class="mbtn" id="mcardbtn">购买月卡</button></div><div id="shoplist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="scb">关闭</button></div></div>
-  <div class="panel" id="dailypanel" style="z-index:51"><div class="ptitle">📋 每日任务</div><div id="dlist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="dcb">关闭</button></div></div>
-  <div class="panel" id="synpanel" style="z-index:51"><div class="ptitle">🔮 合成工坊</div><div class="psub">用收集品合成新物品</div><div id="slist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="snb">关闭</button></div></div>
-  <div class="panel" id="petpanel" style="z-index:51"><div class="ptitle">🐾 伙伴之家</div><div class="psub">招募伙伴助战 · 当前战力 <span id="petpow">0</span></div><div id="petlist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="peb">关闭</button></div></div>
-  <div class="panel" id="lbpanel" style="z-index:51"><div class="ptitle">🏆 排行榜</div><div class="psub">看看你和顶级岛主的差距</div><div id="lblist"></div><div style="text-align:center;padding:10px"><button class="pbtn cancel" id="lbb">关闭</button></div></div>
+  <div class="panel" id="colpanel"><div class="ptitle">📖 收集图鉴</div><div class="psub" id="cc"></div><div id="clist"></div><div class="close-bar"><button class="pbtn cancel" id="ccb">关闭</button></div></div>
+  <div class="panel" id="achieve"><div class="ptitle">🏆 成就殿堂</div><div id="alist"></div><div class="close-bar"><button class="pbtn cancel" id="acb">关闭</button></div></div>
+  <div class="panel" id="shoppanel"><div class="ptitle">💎 宝石商城</div><div class="psub">💠 <span id="shopgems">5</span></div><div id="mcard"><div class="mt">👑 黄金月卡</div><div class="md">每日 💰10万 + 💠3 · 广告跳过</div><div class="mb">¥30/30天</div><button class="mbtn" id="mcardbtn">购买月卡</button></div><div id="shoplist"></div><div class="close-bar"><button class="pbtn cancel" id="scb">关闭</button></div></div>
+  <div class="panel" id="dailypanel"><div class="ptitle">📋 每日任务</div><div id="dlist"></div><div class="close-bar"><button class="pbtn cancel" id="dcb">关闭</button></div></div>
+  <div class="panel" id="synpanel"><div class="ptitle">🔮 合成工坊</div><div class="psub">用收集品合成新物品</div><div id="slist"></div><div class="close-bar"><button class="pbtn cancel" id="snb">关闭</button></div></div>
+  <div class="panel" id="petpanel"><div class="ptitle">🐾 伙伴之家</div><div class="psub">⚡ 战斗力 <span id="petpow">0</span></div><div id="petlist"></div><div class="close-bar"><button class="pbtn cancel" id="peb">关闭</button></div></div>
+  <div class="panel" id="lbpanel"><div class="ptitle">🏅 排行榜</div><div class="psub">财富排名</div><div id="lblist"></div><div class="close-bar"><button class="pbtn cancel" id="lbb">关闭</button></div></div>
   <div id="battle-overlay"><div id="battle-ui"></div></div>
   <div id="minigame-overlay"><div id="mg-ui"></div></div>
-  <div id="chest-overlay"><div class="ccont"><div class="cchest">🎁</div><div class="cres" id="chestResult"></div><button class="cbtn" id="chestClose">📺 双倍领取</button><button class="cbtn" style="background:#855;margin-top:4px;padding:8px 24px;font-size:13px" id="chestSkip">跳过</button></div></div>
-  <div id="offline"><div class="om"><div class="ot">🌙 你离开了</div><div class="oe" id="oam"></div><div class="ot" id="otm"></div><button class="obtn ok" id="oc1">💰 领取</button><button class="obtn dbl" id="oc2">📺 双倍领取</button></div></div>
+  <div id="chest-overlay"><div class="ccont"><div class="cchest">🎁</div><div class="cres" id="chestResult"></div><button class="cbtn" id="chestClose">📺 双倍领取</button><button class="cbtn" style="background:#644;margin-top:4px;padding:8px 20px;font-size:12px" id="chestSkip">跳过</button></div></div>
+  <div id="offline"><div class="om"><div class="ot">🌙 你离开了</div><div class="oe" id="oam"></div><div class="ot" id="otm"></div><button class="obtn ok" id="oc1">💰 领取</button><button class="obtn dbl" id="oc2">📺 双倍</button></div></div>
 </div>
 <script src="data.js"></script><script>
+"use strict";
 // ==================== 存档系统 ====================
 let S=JSON.parse(localStorage.getItem('xzd4')||'{"gold":100,"gems":5,"lvs":{},"found":[],"ach":[],"last":0,"daily":{},"today":"","adx2":0,"cardEnd":0,"noads":false,"pets":[],"kills":0,"synth":0,"eventCd":0,"boostEnd":0,"minigame_rec":0,"fish_rec":0}');
 if(!S.last)S.last=Date.now();S.lvs=S.lvs||{};S.found=S.found||[];S.ach=S.ach||[];S.daily=S.daily||{};S.adx2=S.adx2||0;S.cardEnd=S.cardEnd||0;S.noads=S.noads||false;S.pets=S.pets||[];S.kills=S.kills||0;S.synth=S.synth||0;S.eventCd=S.eventCd||0;S.boostEnd=S.boostEnd||0;S.minigame_rec=S.minigame_rec||0;S.fish_rec=S.fish_rec||0;
-BD.forEach(b=>{if(!(b.id in S.lvs))S.lvs[b.id]=0});
-const today=new Date().toDateString();
+BD.forEach(function(b){if(!(b.id in S.lvs))S.lvs[b.id]=0});
+var today=(new Date()).toDateString();
 if(S.today!==today){S.today=today;S.daily={};S.adx2=0;}
-DAILY.forEach(d=>{if(!(d.id in S.daily))S.daily[d.id]=0});
+DAILY.forEach(function(d){if(!(d.id in S.daily))S.daily[d.id]=0});
 
-// ==================== 音频系统 ====================
-let ac=null;
-function initAudio(){if(ac)return;try{ac=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
-function play(f,hz,dur,type,gain){gain=gain||0.08;type=type||'sine';if(!ac)initAudio();if(!ac)return;try{let o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(hz,ac.currentTime);if(f)o.frequency.exponentialRampToValueAtTime(f,ac.currentTime+dur);g.gain.setValueAtTime(gain,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur);}catch(e){}}
-function sfxClick(){play(0,600,0.08,'sine',0.06);setTimeout(function(){play(0,800,0.06,'sine',0.04)},80);}
-function sfxBuild(){play(0,180,0.15,'triangle',0.1);setTimeout(function(){play(0,360,0.12,'triangle',0.08)},100);setTimeout(function(){play(0,540,0.1,'sine',0.07)},200);}
-function sfxExplore(){play(0,800,0.1,'sine',0.05);setTimeout(function(){play(0,1200,0.08,'sine',0.04)},80);setTimeout(function(){play(0,1600,0.06,'sine',0.03)},160);}
-function sfxGold(){play(0,1200,0.06,'triangle',0.05);setTimeout(function(){play(0,1600,0.04,'triangle',0.04)},50);setTimeout(function(){play(0,2000,0.04,'triangle',0.03)},100);}
-function sfxHit(){play(0,200,0.1,'square',0.08);}
-function sfxWin(){play(0,500,0.15,'sine',0.06);setTimeout(function(){play(0,800,0.12,'sine',0.05)},100);setTimeout(function(){play(0,1200,0.1,'sine',0.04)},250);}
-function sfxCombo(){play(0,600,0.06,'sine',0.04);setTimeout(function(){play(0,900,0.05,'sine',0.03)},60);setTimeout(function(){play(0,1200,0.04,'sine',0.03)},120);setTimeout(function(){play(0,1500,0.03,'sine',0.02)},180);}
-let audioStarted=false;
-document.addEventListener('click',function(){if(!audioStarted){initAudio();audioStarted=true;}},{once:true});
+// ==================== 工具 ====================
+function save(){S.last=Date.now();localStorage.setItem('xzd4',JSON.stringify(S))}
+function fmt(n){return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':Math.floor(n).toString()}
+function getIncome(){var t=0;BD.forEach(function(b){var lv=S.lvs[b.id]||0;if(lv>0)t+=b.bi+b.ig*(lv-1)});return Math.round(t)}
+function realIncome(){var t=getIncome();if(S.boostEnd&&Date.now()<S.boostEnd)t*=2;return Math.round(t)}
+function cost(id){var b=BD.find(function(x){return x.id===id});var lv=S.lvs[id]||0;return Math.floor(b.bc+b.cg*lv*Math.pow(1.05,lv))}
+function totalLv(){var t=0;BD.forEach(function(b){t+=S.lvs[b.id]||0});return t}
+function fmtTime(s){if(s<60)return Math.floor(s)+'秒';if(s<3600)return Math.floor(s/60)+'分钟';return Math.floor(s/3600)+'小时'+Math.floor(s/60%60)+'分'}
+function playerAtk(){var a=totalLv()*2+1;S.pets.forEach(function(pid){var p=PETS.find(function(x){return x.id===pid});if(p)a+=p.atk});return a}
 
-// ==================== 工具函数 ====================
-function save(){S.last=Date.now();localStorage.setItem('xzd4',JSON.stringify(S));}
-function fmt(n){return n>=1e9?(n/1e9).toFixed(2)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e3?(n/1e3).toFixed(1)+'K':Math.floor(n).toString();}
-function getIncome(){let t=0;BD.forEach(b=>{let l=S.lvs[b.id]||0;if(l>0)t+=b.bi+b.ig*(lv-1)*(lv>0?1:0);});return Math.round(t);}
-function realIncome(){let t=0;BD.forEach(b=>{let lv=S.lvs[b.id]||0;if(lv>0)t+=b.bi+b.ig*(lv-1);});if(S.boostEnd&&Date.now()<S.boostEnd)t*=2;return Math.round(t);}
-function cost(id){let b=BD.find(x=>x.id===id);let lv=S.lvs[id]||0;return Math.floor(b.bc+b.cg*lv*Math.pow(1.05,lv));}
-function totalLv(){let t=0;BD.forEach(b=>t+=S.lvs[b.id]||0);return t;}
-function fmtTime(s){if(s<60)return Math.floor(s)+'秒';if(s<3600)return Math.floor(s/60)+'分钟';return Math.floor(s/3600)+'小时'+Math.floor(s/60%60)+'分';}
-function playerAtk(){let a=totalLv()*2+1;S.pets.forEach(pid=>{let p=PETS.find(x=>x.id===pid);if(p)a+=p.atk;});return a;}
-function playerHp(){return 50+totalLv()*5;}
+// ==================== 音频 ====================
+var ac=null;
+function initAudio(){if(ac)return;try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}
+function play(f,hz,dur,type,gain){gain=gain||0.08;type=type||'sine';if(!ac)initAudio();if(!ac)return;try{var o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.setValueAtTime(hz,ac.currentTime);if(f)o.frequency.exponentialRampToValueAtTime(f,ac.currentTime+dur);g.gain.setValueAtTime(gain,ac.currentTime);g.gain.exponentialRampToValueAtTime(0.001,ac.currentTime+dur);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+dur)}catch(e){}}
+function sfxClick(){play(0,600,0.08,'sine',0.06);setTimeout(function(){play(0,800,0.06,'sine',0.04)},80)}
+function sfxBuild(){play(0,180,0.15,'triangle',0.1);setTimeout(function(){play(0,360,0.12,'triangle',0.08)},100);setTimeout(function(){play(0,540,0.1,'sine',0.07)},200)}
+function sfxGold(){play(0,1200,0.06,'triangle',0.05);setTimeout(function(){play(0,1600,0.04,'triangle',0.04)},50);setTimeout(function(){play(0,2000,0.04,'triangle',0.03)},100)}
+function sfxHit(){play(0,200,0.1,'square',0.08)}
+function sfxWin(){play(0,500,0.15,'sine',0.06);setTimeout(function(){play(0,800,0.12,'sine',0.05)},100);setTimeout(function(){play(0,1200,0.1,'sine',0.04)},250)}
+var audioStarted=false;
+document.addEventListener('click',function(){if(!audioStarted){initAudio();audioStarted=true}},{once:true});
 
-// ==================== UI渲染 ====================
-function updateUI(){
-  document.getElementById('gld').textContent='💰 '+fmt(S.gold);
-  document.getElementById('gms').textContent='💠 '+S.gems;
-  document.getElementById('btlvl').textContent='Lv.'+totalLv();
-  document.getElementById('rate').textContent='💰 '+realIncome()+'/s'+(S.boostEnd&&Date.now()<S.boostEnd?' 🔥双倍':'');
-  renderBld();checkAch();
+// ==================== 当前Tab ====================
+var currentTab='home';
+function switchTab(tab){
+  currentTab=tab;
+  document.querySelectorAll('#bottom .nav-btn').forEach(function(b){b.classList.remove('active')});
+  var btn=document.querySelector('[data-tab="'+tab+'"]');if(btn)btn.classList.add('active');
+  document.getElementById('more-menu').style.display='none';
+  var s=document.getElementById('scroll'),panels=['colpanel','achieve','shoppanel','dailypanel','synpanel','petpanel','lbpanel'];
+  panels.forEach(function(p){document.getElementById(p).style.display='none'});
+  s.style.display='';
+  if(tab==='home')renderHome();
+  else if(tab==='explore')doExplore();
+  else if(tab==='battle')startBattle();
+  else if(tab==='game')selectMinigame();
 }
-function renderBld(){
-  document.getElementById('scroll').innerHTML=BD.map(b=>{
-    let lv=S.lvs[b.id]||0,inc=lv>0?b.bi+b.ig*(lv-1):0,isMax=lv>=b.ml;
-    let tier=TIER[b.t],brd=lv>0?('border-color:rgba(255,215,0,'+(.05+lv/b.ml*.2)+')'):'';
-    return '<div class="card'+(lv===0?' lv0':'')+'" style="'+brd+'">'+
+
+// ==================== 主页渲染 ====================
+function renderHome(){
+  document.getElementById('scroll').innerHTML=BD.map(function(b){
+    var lv=S.lvs[b.id]||0,inc=lv>0?b.bi+b.ig*(lv-1):0,isMax=lv>=b.ml;
+    var t=TIER[b.t],tcls=t.color==='#aaa'?'t1':t.color==='#6cf'?'t2':'t3';
+    return '<div class="card'+(lv===0?' lv0':'')+'">'+
       '<div class="ico">'+(ICONS[b.id]||'🏠')+'</div>'+
-      '<div class="info"><div class="name">'+b.n+' <span style="font-size:9px;color:'+tier.color+'">'+tier.name+'</span></div>'+
-      '<div class="level">'+(lv===0?'未建造':'Lv.'+lv+'/'+b.ml)+'</div>'+
-      '<div class="rate">'+(inc||0)+'/s</div></div>'+
+      '<div class="info">'+
+        '<div class="toprow"><span class="name">'+b.n+'</span><span class="tier '+tcls+'">'+t.name+'</span></div>'+
+        '<div class="subrow">'+
+          '<span class="level">'+(lv===0?'未建造':'Lv.'+lv+'/'+b.ml)+'</span>'+
+          '<span class="rate">'+(inc||0)+'/s</span>'+
+        '</div>'+
+      '</div>'+
       (isMax?'<button class="act max" disabled>MAX</button>':'<button class="act build" data-bld="'+b.id+'">'+(lv===0?'建':'升')+fmt(cost(b.id))+'</button>')+
-      '</div>';
+    '</div>';
   }).join('');
+}
+function updateUI(){
+  document.getElementById('gld').textContent=fmt(S.gold);
+  document.getElementById('gms').textContent=S.gems;
+  document.getElementById('btlvl').textContent='Lv.'+totalLv();
+  document.getElementById('rateval').textContent=fmt(realIncome());
+  if(currentTab==='home')renderHome();
+  checkAch();
 }
 
 // ==================== 弹窗 ====================
-let curBld='',isExplore=false;
-function showPopup(t,d){document.getElementById('pt').textContent=t;document.getElementById('pd').textContent=d;document.getElementById('pca').style.display=isExplore?'none':'';document.getElementById('ol').classList.add('show');}
-function hidePopup(){document.getElementById('ol').classList.remove('show');curBld='';isExplore=false;}
+var curBld='',isExplore=false;
+function showPopup(t,d){document.getElementById('pt').textContent=t;document.getElementById('pd').textContent=d;document.getElementById('pca').style.display=isExplore?'none':'';document.getElementById('ol').classList.add('show')}
+function hidePopup(){document.getElementById('ol').classList.remove('show');curBld='';isExplore=false}
 
-// ==================== 建筑 ====================
+// ==================== 建造 ====================
 function showBldPopup(id){
-  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  var b=BD.find(function(x){return x.id===id}),lv=S.lvs[id]||0,co=cost(id);
   if(lv===0)showPopup('🏗 '+b.n,'消耗 '+fmt(co)+' 金币\n建造后产出 '+b.bi+'/秒');
-  else{let o=b.bi+b.ig*(lv-1),n=b.bi+b.ig*lv;showPopup('🔧 升级 '+b.n,'Lv.'+lv+' → '+(lv+1)+'\n消耗 '+fmt(co)+' 金币\n'+o+' → '+n+'/秒');}
+  else{var o=b.bi+b.ig*(lv-1),n=b.bi+b.ig*lv;showPopup('🔧 升级 '+b.n,'Lv.'+lv+' → '+(lv+1)+'\n消耗 '+fmt(co)+' 金币\n'+o+' → '+n+'/秒')}
 }
 function doBuild(id){
-  let b=BD.find(x=>x.id===id),lv=S.lvs[id]||0,co=cost(id);
+  var b=BD.find(function(x){return x.id===id}),lv=S.lvs[id]||0,co=cost(id);
   if(lv>=b.ml||S.gold<co)return false;
   S.gold-=co;S.lvs[id]=lv+1;trackDaily('d2');save();updateUI();
   sfxBuild();flyText((lv===0?'🏗 建造！':'⬆ Lv.'+(lv+1))+' '+b.n);
-  return true;
+  return true
 }
 
 // ==================== 探索 ====================
 function doExplore(){
   trackDaily('d1');sfxClick();
-  let tl=totalLv(),av=IT.filter(i=>i.u<=tl&&!S.found.includes(i.id));
-  if(av.length===0||Math.random()>0.4){let b=Math.max(realIncome(),1)*60;flyText('🔍 +'+fmt(b)+'💰');S.gold+=b;save();updateUI();return;}
-  let ws=av.map(i=>({i:i,w:100/i.r})),tw=ws.reduce(function(s,x){return s+x.w},0),r=Math.random()*tw;
-  for(let w of ws){r-=w.w;if(r<=0){S.found.push(w.i.id);trackDaily('d4');save();isExplore=true;sfxExplore();showPopup('🎉 发现新物品！',w.i.n+' ⭐'.repeat(w.i.r)+'\n'+w.i.d);return;}}
+  var tl=totalLv(),av=IT.filter(function(i){return i.u<=tl&&!S.found.includes(i.id)});
+  if(av.length===0||Math.random()>0.35){
+    var b=Math.max(realIncome(),1)*120;flyText('🔍 +'+fmt(b)+' 💰');S.gold+=b;save();updateUI();return
+  }
+  var ws=av.map(function(i){return {i:i,w:100/i.r}}),tw=ws.reduce(function(s,x){return s+x.w},0),r=Math.random()*tw;
+  for(var j=0;j<ws.length;j++){r-=ws[j].w;if(r<=0){var w=ws[j];S.found.push(w.i.id);trackDaily('d4');save();isExplore=true;sfxBuild();showPopup('🎉 新发现！',w.i.n+' ⭐'.repeat(w.i.r)+'\n'+w.i.d);return}}
 }
 
 // ==================== 广告 ====================
-function doAd(){let b=Math.max(realIncome(),1)*3600*2;S.gold+=b;save();updateUI();sfxGold();flyText('📺 +'+fmt(b)+' 💰');}
+function doAd(){var b=Math.max(realIncome(),1)*3600*2;S.gold+=b;save();updateUI();sfxGold();flyText('📺 +'+fmt(b)+' 💰')}
 
 // ==================== 图鉴 ====================
-let colOpen=false;
-function toggleCol(){colOpen=!colOpen;document.getElementById('colpanel').style.display=colOpen?'block':'none';document.getElementById('scroll').style.display=colOpen?'none':'';if(colOpen)renderCol();}
+function openPanel(id){document.querySelectorAll('.panel').forEach(function(p){p.style.display='none'});document.getElementById('scroll').style.display='none';document.getElementById(id).style.display='block'}
+function closePanel(id){document.getElementById(id).style.display='none';document.getElementById('scroll').style.display='';switchTab(currentTab)}
 function renderCol(){
-  let found=0,html='';IT.forEach(c=>{let disc=S.found.includes(c.id);if(disc)found++;
-  html+='<div class="pitem flex'+(disc?' found':' locked')+'"><div class="pi">'+(disc?'⭐'.repeat(Math.min(c.r,4)):'❓')+'</div><div class="ptx"><div class="pn">'+(disc?c.n+' ⭐'.repeat(c.r):'???')+'</div><div class="pd">'+(disc?c.d:'继续探索解锁')+'</div></div></div>';});
-  document.getElementById('clist').innerHTML=html;document.getElementById('cc').textContent='已收集:'+found+'/'+IT.length;
+  var found=0,html='';IT.forEach(function(c){var disc=S.found.includes(c.id);if(disc)found++;
+  html+='<div class="pitem flex'+(disc?' found':' locked')+'"><div class="pi">'+(disc?'⭐'.repeat(Math.min(c.r,4)):'❓')+'</div><div class="ptx"><div class="pn">'+(disc?c.n+' ⭐'.repeat(c.r):'???')+'</div><div class="pd">'+(disc?c.d:'继续探索解锁')+'</div></div></div>'});
+  document.getElementById('clist').innerHTML=html;
+  document.getElementById('cc').textContent='已收集 '+found+'/'+IT.length
 }
 
 // ==================== 成就 ====================
-let achOpen=false;
-function toggleAch(){achOpen=!achOpen;document.getElementById('achieve').style.display=achOpen?'block':'none';document.getElementById('scroll').style.display=achOpen?'none':'';if(achOpen)renderAch();}
 function renderAch(){
-  document.getElementById('alist').innerHTML=ACH.map(a=>{
-    let done=S.ach.includes(a.id),ok=aCheck(a);
-    return '<div class="pitem flex'+(done?' found':'')+'"><div class="pi">'+a.icon+'</div><div class="ptx"><div class="pn">'+a.n+'</div><div class="pd">'+a.d+'</div></div><div class="pr">'+(done?'✅ 已达成':ok?'🔓 可领取':'🔒')+'</div></div>';
-  }).join('');
+  document.getElementById('alist').innerHTML=ACH.map(function(a){
+    var done=S.ach.includes(a.id),ok=aCheck(a);
+    return '<div class="pitem flex'+(done?' found':'')+'"><div class="pi">'+a.icon+'</div><div class="ptx"><div class="pn">'+a.n+'</div><div class="pd">'+a.d+'</div></div><div class="pr">'+(done?'✅ 已达成':ok?'🔓 可领取':'🔒')+'</div></div>'
+  }).join('')
 }
 function aCheck(a){
-  if(a.id==='a1')return Object.values(S.lvs).some(v=>v>0);
+  if(a.id==='a1')return Object.values(S.lvs).some(function(v){return v>0});
   if(a.id==='a2')return S.gold>=1000;
   if(a.id==='a3')return totalLv()>=20;
   if(a.id==='a4')return S.found.length>=5;
   if(a.id==='a5')return S.gold>=1e6;
   if(a.id==='a6')return S.found.length>=12;
-  if(a.id==='a7')return (S.lvs['dragon']||0)>0;
-  if(a.id==='a8')return (S.lvs['castle']||0)>0;
+  if(a.id==='a7')return (S.lvs.dragon||0)>0;
+  if(a.id==='a8')return (S.lvs.castle||0)>0;
   if(a.id==='a9')return (S.kills||0)>=5;
   if(a.id==='a10')return (S.synth||0)>=10;
   if(a.id==='a11')return S.pets.length>=3;
   if(a.id==='a12')return S.gold>=1e7;
-  return false;
+  return false
 }
-function checkAch(){
-  let changed=false;
-  ACH.forEach(a=>{if(!S.ach.includes(a.id)&&aCheck(a)){S.ach.push(a.id);changed=true;sfxGold();flyText('🏆 '+a.n+' 达成！');}});
-  if(changed)save();
-}
+function checkAch(){var c=false;ACH.forEach(function(a){if(!S.ach.includes(a.id)&&aCheck(a)){S.ach.push(a.id);c=true;sfxGold();flyText('🏆 '+a.n+' 达成！')}});if(c)save()}
 
-// ==================== 每日任务 ====================
-function trackDaily(id){S.daily[id]=(S.daily[id]||0)+1;save();}
-let dailyOpen=false;
-function toggleDaily(){dailyOpen=!dailyOpen;document.getElementById('dailypanel').style.display=dailyOpen?'block':'none';document.getElementById('scroll').style.display=dailyOpen?'none':'';if(dailyOpen)renderDaily();}
+// ==================== 每日 ====================
+function trackDaily(id){S.daily[id]=(S.daily[id]||0)+1;save()}
 function renderDaily(){
-  document.getElementById('dlist').innerHTML=DAILY.map(d=>{
-    let curr=S.daily[d.id]||0,pct=Math.min(100,Math.floor(curr/d.need*100)),done=curr>=d.need;
-    if(d.id==='d3'){curr=realIncome();done=realIncome()>=d.need;pct=Math.min(100,Math.floor(realIncome()/d.need*100));}
-    return '<div class="pitem flex'+(done?' daily-done':'')+'"><div class="pi">'+d.icon+'</div><div class="ptx"><div class="pn">'+d.n+'</div><div class="pd">'+curr+'/'+d.need+'</div><div class="daily-bar"><div class="daily-fill" style="width:'+pct+'%"></div></div></div><div class="pr">'+(done?'✅':'💠 +'+d.reward)+'</div></div>';
-  }).join('');
+  document.getElementById('dlist').innerHTML=DAILY.map(function(d){
+    var curr=S.daily[d.id]||0,done=curr>=d.need;
+    if(d.id==='d3'){curr=realIncome();done=realIncome()>=d.need}
+    var pct=Math.min(100,Math.floor((d.id==='d3'?realIncome():curr)/d.need*100));
+    return '<div class="pitem flex'+(done?' daily-done':'')+'"><div class="pi">'+d.icon+'</div><div class="ptx"><div class="pn">'+d.n+'</div><div class="pd">'+curr+'/'+d.need+'</div><div class="daily-bar"><div class="daily-fill" style="width:'+pct+'%"></div></div></div><div class="pr">'+(done?'✅':'💠 +'+d.reward)+'</div></div>'
+  }).join('')
 }
 
 // ==================== 商城 ====================
-let shopOpen=false;
-function toggleShop(){shopOpen=!shopOpen;document.getElementById('shoppanel').style.display=shopOpen?'block':'none';document.getElementById('scroll').style.display=shopOpen?'none':'';if(shopOpen)updateShop();}
 function updateShop(){
   document.getElementById('shopgems').textContent=S.gems;
-  let ca=(S.cardEnd||0)>Date.now();
+  var ca=(S.cardEnd||0)>Date.now();
   document.getElementById('mcard').className=ca?'active':'';
   document.getElementById('mcardbtn').textContent=ca?'月卡有效 ('+Math.ceil(Math.max(0,S.cardEnd-Date.now())/86400000)+'天)':'购买月卡';
   document.getElementById('mcardbtn').onclick=ca?null:buyCard;
-  document.getElementById('shoplist').innerHTML=SHOP.map(s=>'<div class="shop-card"><div class="si">💎</div><div class="si2"><div class="sn">'+s.n+'</div><div class="sd">'+s.d+'</div></div><button class="sbtn" data-shop="'+s.id+'">'+s.price+'</button></div>').join('');
+  document.getElementById('shoplist').innerHTML=SHOP.map(function(s){return '<div class="shop-card"><div class="si">💎</div><div class="si2"><div class="sn">'+s.n+'</div><div class="sd">'+s.d+'</div></div><button class="sbtn" data-shop="'+s.id+'">'+s.price+'</button></div>'}).join('')
 }
-function buyCard(){if((S.cardEnd||0)>Date.now()){flyText('👑 月卡仍在有效期内');return;}S.cardEnd=Date.now()+30*86400000;S.gems+=3;save();sfxGold();flyText('👑 月卡已激活！30天');updateShop();}
-function buyShop(id){let s=SHOP.find(x=>x.id===id);if(!s)return;if(s.adfree){S.noads=true;save();sfxGold();flyText('🚫 广告已移除！');updateShop();return;}if(s.gold)S.gold+=s.gold;if(s.gems)S.gems+=s.gems;save();sfxGold();flyText('💎 +'+s.gems+' 💰 +'+fmt(s.gold));updateShop();updateUI();}
-
-// ==================== 宝箱 ====================
-let chestAmt=0,chestX2=false;
-function openChest(amt,x2){chestAmt=amt;chestX2=x2;initAudio();document.getElementById('chestResult').textContent=fmt(amt)+' 💰';document.getElementById('chestSkip').style.display=x2?'none':'';document.getElementById('chest-overlay').style.display='flex';play(0,300,0.6,'sine',0.06);setTimeout(function(){play(0,600,0.4,'sine',0.05)},300);setTimeout(function(){play(0,900,0.3,'sine',0.04)},600);}
-function closeChest(){document.getElementById('chest-overlay').style.display='none';}
-function claimChest(){if(chestX2){S.gold+=chestAmt}else{S.gold+=chestAmt*2};save();updateUI();sfxGold();closeChest();}
-function claimChestSkip(){S.gold+=chestAmt;save();updateUI();sfxGold();closeChest();}
-
-// ==================== 离线收益 ====================
-let offAmt=0,offDt=0;
-(function(){offDt=(Date.now()-S.last)/1000;if(offDt>10){let inc=getIncome();offAmt=Math.floor(Math.min(offDt,86400)*inc);if(offAmt>0)showOffline(offAmt);}S.last=Date.now();save();})();
-function showOffline(amt){document.getElementById('oam').textContent='+'+fmt(amt)+' 💰';document.getElementById('otm').textContent='离线 '+fmtTime(offDt);document.getElementById('offline').style.display='flex';}
-function claimOffline(){S.gold+=offAmt;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0;}
-function claimOfflineDouble(){S.gold+=offAmt*2;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0;flyText('📺 双倍！');}
-
-// ==================== 飘字 ====================
-function flyText(t){let el=document.createElement('div');el.className='fly';el.textContent=t;document.getElementById('game').appendChild(el);setTimeout(function(){el.remove();},1300);}
-
+function buyCard(){if((S.cardEnd||0)>Date.now()){flyText('👑 月卡仍在有效期内');return}S.cardEnd=Date.now()+30*86400000;S.gems+=3;save();sfxGold();flyText('👑 月卡已激活！30天');updateShop()}
+function buyShop(id){var s=SHOP.find(function(x){return x.id===id});if(!s)return;if(s.adfree){S.noads=true;save();sfxGold();flyText('🚫 广告已移除！');updateShop();return}if(s.gold)S.gold+=s.gold;if(s.gems)S.gems+=s.gems;save();sfxGold();flyText('💎 +'+s.gems+' 💰 +'+fmt(s.gold));updateShop();updateUI()}
 // ==================== 战斗系统 ====================
-let battleActive=false, battleEnemy=null, battleEhp=0, battleLog=[];
+var battleActive=false,bEnemy=null,bEhp=0,bLog=[];
 function selectEnemy(){
-  let tl=totalLv(),avail=ENEMIES.filter(e=>e.lv<=tl+5);
+  var tl=totalLv(),avail=ENEMIES.filter(function(e){return e.lv<=tl+5});
   if(avail.length===0)return ENEMIES[0];
-  return avail[Math.floor(Math.random()*avail.length)];
+  return avail[Math.floor(Math.random()*avail.length)]
 }
 function startBattle(){
-  let e=selectEnemy();battleActive=true;battleEnemy=e;battleEhp=e.hp;battleLog=['⚔️ 遭遇了 '+e.n+'！'];
-  renderBattle();
-  document.getElementById('battle-overlay').style.display='block';
+  var e=selectEnemy();battleActive=true;bEnemy=e;bEhp=e.hp;bLog=['⚔️ 遇上 '+e.n+'！'];
+  document.getElementById('battle-overlay').style.display='flex';
   document.getElementById('scroll').style.display='none';
-  initAudio();
+  renderBattle()
 }
 function renderBattle(){
-  let hp=playerHp(),ehp=battleEhp,bhp=maxHp(),behp=battleEnemy.hp;
-  let hpPct=Math.max(0,Math.floor(ehp/Math.max(1,behp)*100));
+  var bhp=50+totalLv()*5,pct=Math.max(0,Math.floor(bEhp/Math.max(1,bEnemy.hp)*100));
   document.getElementById('battle-ui').innerHTML=
-    '<div class="btitle">⚔️ 对战 '+battleEnemy.n+'</div>'+
-    '<div style="font-size:30px">'+battleEnemy.icon+'</div>'+
-    '<div class="bhp"><span>你</span><div class="bhp-bar"><div class="bhp-fill me" style="width:'+hpPct+'%"></div></div><span>'+ehp+'/'+bhp+'</span></div>'+
-    '<div class="blog">'+battleLog.map(l=>'<div>'+l+'</div>').join('')+'</div>'+
+    '<div class="btitle">⚔️ 对战 '+bEnemy.n+'</div>'+
+    '<div style="font-size:48px">'+bEnemy.icon+'</div>'+
+    '<div class="bhp"><span style="font-size:12px">你</span><div class="bhp-bar"><div class="bhp-fill me" style="width:'+pct+'%"></div></div><span style="font-size:12px">'+bEhp+'/'+bhp+'</span></div>'+
+    '<div class="blog">'+bLog.map(function(l){return '<div>'+l+'</div>'}).join('')+'</div>'+
     '<div class="bbtn-area"><button class="pbtn ok attack-btn">⚔️ 攻击</button><button class="pbtn cancel flee-btn">🏃 逃跑</button></div>'+
-    '<div class="btla">⚡ 攻击力: '+playerAtk()+' | ⚔️ 胜场: '+(S.kills||0)+'</div>';
+    '<div style="font-size:11px;color:#888;margin-top:8px">⚡ 攻击力: '+playerAtk()+' | ⚔️ 胜场: '+(S.kills||0)+'</div>'
 }
-function maxHp(){return playerHp();}
 function battleAttack(){
   if(!battleActive)return;
-  let dmg=Math.floor(playerAtk()*(0.8+Math.random()*0.4));
-  battleEhp-=dmg;battleLog.push('🗡️ 你对 '+battleEnemy.n+' 造成 '+dmg+' 伤害！');
-  sfxHit();
-  if(battleEhp<=0){
-    battleActive=false;S.kills=(S.kills||0)+1;
-    let g=battleEnemy.gold;S.gold+=g;
+  var dmg=Math.floor(playerAtk()*(0.8+Math.random()*0.4));bEhp-=dmg;bLog.push('🗡️ 造成 '+dmg+' 伤害！');sfxHit();
+  if(bEhp<=0){
+    battleActive=false;S.kills=(S.kills||0)+1;var g=bEnemy.gold;S.gold+=g;
     trackDaily('d5');save();updateUI();sfxWin();
     document.getElementById('battle-ui').innerHTML=
       '<div class="btitle" style="color:#ffd700">🎉 胜利！</div>'+
-      '<div style="font-size:30px">'+battleEnemy.icon+'</div>'+
-      '<div style="color:#ffd700;font-size:18px;margin:12px 0">+'+fmt(g)+' 💰</div>'+
-      '<div style="color:#aaa;font-size:12px">击败了 '+battleEnemy.n+'</div>'+
-      '<div class="blog">'+battleLog.map(l=>'<div>'+l+'</div>').join('')+'</div>'+
-      '<div style="margin-top:12px"><button class="pbtn ok" id="battle-close">继续</button></div>';
-    return;
+      '<div style="font-size:48px">'+bEnemy.icon+'</div>'+
+      '<div style="color:#ffd700;font-size:22px;margin:12px 0">+'+fmt(g)+' 💰</div>'+
+      '<div style="color:#aaa;font-size:12px">击败了 '+bEnemy.n+'</div>'+
+      '<div style="margin-top:14px"><button class="pbtn ok" id="battle-close">继续冒险</button></div>';
+    return
   }
-  // 敌人反击
   setTimeout(function(){
     if(!battleActive)return;
-    let edmg=Math.floor(battleEnemy.atk*(0.7+Math.random()*0.6));
-    let php=playerHp()-edmg;
-    let lose=edmg>=playerHp()||Math.random()<0.05;
+    var edmg=Math.floor(bEnemy.atk*(0.7+Math.random()*0.6)),lose=Math.random()<0.05;
     if(lose){
       battleActive=false;S.gold=Math.floor(S.gold*0.9);
-      battleLog.push('💔 '+battleEnemy.n+' 造成 '+edmg+' 致命伤害！你逃跑了... 损失10%金币');
-      save();updateUI();
+      bLog.push('💔 '+bEnemy.n+' 致命一击！损失10%金币');save();updateUI();
       document.getElementById('battle-ui').innerHTML=
         '<div class="btitle" style="color:#e55">💔 战败</div>'+
-        '<div style="font-size:30px">'+battleEnemy.icon+'</div>'+
-        '<div style="color:#e55;font-size:16px;margin:12px 0">损失了 10% 金币...</div>'+
-        '<div class="blog">'+battleLog.map(l=>'<div>'+l+'</div>').join('')+'</div>'+
-        '<div style="margin-top:12px"><button class="pbtn cancel" id="battle-close">😢 撤退</button></div>';
+        '<div style="font-size:48px">'+bEnemy.icon+'</div>'+
+        '<div class="blog">'+bLog.map(function(l){return '<div>'+l+'</div>'}).join('')+'</div>'+
+        '<div style="margin-top:14px"><button class="pbtn cancel" id="battle-close">😢 撤退</button></div>'
     }else{
-      battleLog.push('💢 '+battleEnemy.n+' 反击造成 '+edmg+' 伤害！');
-      renderBattle();
+      bLog.push('💢 '+bEnemy.n+' 反击 '+edmg+' 伤害！');renderBattle()
     }
-  },600);
+  },600)
 }
 function closeBattle(){
   document.getElementById('battle-overlay').style.display='none';
   document.getElementById('scroll').style.display='';
-  battleActive=false;flyText('⚔️ 胜场: '+(S.kills||0));
+  battleActive=false;switchTab('home')
 }
 
-// ==================== 随机事件系统 ====================
+// ==================== 随机事件 ====================
 function checkEvent(){
   if(Date.now()<S.eventCd)return;
-  let ev=EVENTS[Math.floor(Math.random()*EVENTS.length)],amt=Math.floor(Math.max(realIncome(),10)*3600*(0.5+Math.random()));
-  S.eventCd=Date.now()+120000+Math.random()*300000;
-  save();
-  let evpop=document.getElementById('evpop');
-  let icon=evpop.querySelector('.evicon'),title=evpop.querySelector('.evtitle'),desc=evpop.querySelector('.evdesc'),btn=evpop.querySelector('.evbtn');
-  icon.textContent=ev.icon;title.textContent=ev.n;
-  let descText=ev.d.replace('{amt}',fmt(amt));
-  desc.textContent=descText;
-  evpop.style.display='block';
-  btn.onclick=function(){
-    evpop.style.display='none';
-    if(ev.g==='gold'){S.gold+=amt;sfxGold();flyText('💰 +'+fmt(amt));}
-    else if(ev.g==='lose'){S.gold=Math.max(0,S.gold-amt);flyText('💸 -'+fmt(amt));play(0,80,0.2,'square',0.06);}
-    else if(ev.g==='gem'){S.gems+=3;sfxGold();flyText('💠 +3');}
-    else if(ev.g==='boost'){S.boostEnd=Date.now()+30000;flyText('⚡ 30秒双倍！');}
-    save();updateUI();
-  };
+  var ev=EVENTS[Math.floor(Math.random()*EVENTS.length)],amt=Math.floor(Math.max(realIncome(),10)*3600*(0.5+Math.random()));
+  S.eventCd=Date.now()+120000+Math.random()*300000;save();
+  var pop=document.getElementById('evpop');
+  pop.querySelector('.evicon').textContent=ev.icon;
+  pop.querySelector('.evtitle').textContent=ev.n;
+  pop.querySelector('.evdesc').textContent=ev.d.replace('{amt}',fmt(amt));
+  pop.style.display='block';
+  pop.querySelector('.evbtn').onclick=function(){
+    pop.style.display='none';
+    if(ev.g==='gold'){S.gold+=amt;sfxGold();flyText('💰 +'+fmt(amt))}
+    else if(ev.g==='lose'){S.gold=Math.max(0,S.gold-amt);flyText('💸 -'+fmt(amt));play(0,80,0.2,'square',0.06)}
+    else if(ev.g==='gem'){S.gems+=3;sfxGold();flyText('💠 +3')}
+    else if(ev.g==='boost'){S.boostEnd=Date.now()+30000;flyText('⚡ 30秒双倍产能！')}
+    save();updateUI()
+  }
 }
 
-// ==================== 小游戏合集 ====================
-let mgActive=false,mgType='',mgScore=0,mgTimer=0,mgInterval=null,mgTargets=[];
+// ==================== 小游戏 ====================
+var mgActive=false,mgType='',mgScore=0,mgTimer=0,mgInt=null;
+function selectMinigame(){
+  var ui=document.getElementById('mg-ui');mgActive=false;
+  document.getElementById('minigame-overlay').style.display='flex';
+  document.getElementById('scroll').style.display='none';
+  ui.innerHTML='<div class="mgtitle">🎮 游乐场</div>'+
+    '<div class="mginfo">选一个来玩吧</div>'+
+    '<div style="display:flex;flex-direction:column;gap:8px;margin:16px 0">'+
+    '<button class="pbtn ok" style="width:100%;padding:14px" id="mg-clicker">🎯 快速连点 最佳:'+(S.minigame_rec||0)+'</button>'+
+    '<button class="pbtn ok" style="width:100%;padding:14px" id="mg-fish">🎣 趣味钓鱼 最佳:'+(S.fish_rec||0)+'</button>'+
+    '</div>'+
+    '<button class="pbtn cancel" id="mg-quit">返回</button>'
+}
 function startMinigame(type){
   mgActive=true;mgType=type;mgScore=0;mgTimer=15;
-  document.getElementById('minigame-overlay').style.display='block';
-  document.getElementById('scroll').style.display='none';
-  if(type==='clicker')renderClicker();
-  else if(type==='fish')renderFish();
-  mgInterval=setInterval(function(){
-    if(!mgActive){clearInterval(mgInterval);return;}
-    mgTimer--;updateMgTimer();
-    if(mgTimer<=0)endMinigame();
-  },1000);
+  var ui=document.getElementById('mg-ui');
+  if(type==='clicker'){
+    ui.innerHTML='<div class="mgtitle">🎯 快速连点</div>'+
+      '<div class="mginfo">点中光圈得分！越快越高分</div>'+
+      '<div class="mg-score" id="mgscore">0</div>'+
+      '<div class="mg-timer" id="mgtimer">⏱ 15s</div>'+
+      '<div class="mg-area" id="mgarea"></div>'+
+      '<div style="margin-top:8px"><button class="pbtn cancel" id="mgquit">退出</button></div>';
+    spawnTarget()
+  }else if(type==='fish'){
+    ui.innerHTML='<div class="mgtitle">🎣 趣味钓鱼</div>'+
+      '<div class="mginfo">在✅区域按【收竿】</div>'+
+      '<div class="mg-score" id="mgscore">0</div>'+
+      '<div class="mg-timer" id="mgtimer">⏱ 15s</div>'+
+      '<div id="fish-area"><div class="fish-target" id="fishtarget" style="top:50%">🐟</div><div class="fish-zone" id="fishzone" style="top:50%"></div></div>'+
+      '<div class="fish-result" id="fishresult"></div>'+
+      '<button class="pbtn ok" id="mgcast" style="width:100%;margin-top:8px">🎣 收竿！</button>'+
+      '<button class="pbtn cancel" id="mgquit" style="width:100%;margin-top:4px">退出</button>';
+    fishPos=50;fishDir=1;moveFish()
+  }
+  mgInt=setInterval(function(){
+    if(!mgActive){clearInterval(mgInt);return}
+    mgTimer--;var t=document.getElementById('mgtimer');if(t)t.textContent='⏱ '+mgTimer+'s';
+    if(mgTimer<=0)endMinigame()
+  },1000)
 }
-function updateMgTimer(){let t=document.getElementById('mgtimer');if(t)t.textContent='⏱ '+mgTimer+'s';}
-
-// 点按小游戏
-function renderClicker(){
-  let ui=document.getElementById('mg-ui');
-  ui.innerHTML='<div class="mgtitle">🎯 快速点击</div>'+
-    '<div class="mginfo">点击出现的光圈！越快分越高</div>'+
-    '<div class="mg-score" id="mgscore">0</div>'+
-    '<div class="mg-timer" id="mgtimer">⏱ 15s</div>'+
-    '<div class="mg-area" id="mgarea"></div>'+
-    '<div style="margin-top:8px"><button class="pbtn cancel" id="mgquit">退出</button></div>';
-  spawnClickerTarget();
-}
-function spawnClickerTarget(){
+function spawnTarget(){
   if(!mgActive||mgType!=='clicker')return;
-  let area=document.getElementById('mgarea'),w=area.clientWidth-60,h=area.clientHeight-60;
-  let x=15+Math.random()*(w),y=15+Math.random()*(h);
-  let t=document.createElement('div');t.className='mg-hit'+(mgTimer<8?' fast':'');
+  var area=document.getElementById('mgarea'),w=area.clientWidth-60,h=area.clientHeight-60;
+  var x=15+Math.random()*(w),y=15+Math.random()*(h);
+  var t=document.createElement('div');t.className='mg-hit'+(mgTimer<8?' fast':'');
   t.style.left=x+'px';t.style.top=y+'px';
-  t.addEventListener('mousedown',function(e){e.preventDefault();t.remove();mgScore++;sfxClick();document.getElementById('mgscore').textContent=mgScore;spawnClickerTarget();});
-  t.addEventListener('touchstart',function(e){e.preventDefault();t.remove();mgScore++;sfxClick();document.getElementById('mgscore').textContent=mgScore;spawnClickerTarget();});
+  t.addEventListener('pointerdown',function(e){e.preventDefault();t.remove();mgScore++;var s=document.getElementById('mgscore');if(s)s.textContent=mgScore;sfxClick();spawnTarget()});
   area.innerHTML='';area.appendChild(t);
-  setTimeout(function(){if(t.parentNode)t.remove();if(mgActive&&mgType==='clicker')spawnClickerTarget();},mgTimer<8?500:800);
+  setTimeout(function(){if(t.parentNode)t.remove();if(mgActive&&mgType==='clicker')spawnTarget()},mgTimer<8?450:750)
 }
-
-// 钓鱼小游戏
-let fishPos=0,fishDir=1;
-function renderFish(){
-  let ui=document.getElementById('mg-ui');
-  ui.innerHTML='<div class="mgtitle">🎣 钓鱼</div>'+
-    '<div class="mginfo">在✅区域点击收竿！</div>'+
-    '<div class="mg-score" id="mgscore">0</div>'+
-    '<div class="mg-timer" id="mgtimer">⏱ 15s</div>'+
-    '<div id="fish-area"><div class="fish-target" id="fishtarget" style="top:50%"></div><div class="fish-zone" id="fishzone" style="top:50%"></div></div>'+
-    '<div class="fish-result" id="fishresult"></div>'+
-    '<div style="margin-top:4px"><button class="pbtn ok" id="mgcast" style="width:100%">🎣 收竿！</button><button class="pbtn cancel" id="mgquit" style="width:100%;margin-top:4px">退出</button></div>';
-  fishPos=50;fishDir=1;moveFish();
-}
+var fishPos=50,fishDir=1;
 function moveFish(){
   if(!mgActive||mgType!=='fish')return;
   fishPos+=fishDir*5;if(fishPos>80||fishPos<20)fishDir*=-1;
-  let ft=document.getElementById('fishtarget');if(ft)ft.style.top=fishPos+'%';
-  let fz=document.getElementById('fishzone');if(fz)fz.style.top=(50+Math.floor(Math.random()*10-5))+'%';
-  setTimeout(moveFish,200);
+  var ft=document.getElementById('fishtarget');if(ft)ft.style.top=fishPos+'%';
+  var fz=document.getElementById('fishzone');if(fz)fz.style.top=(50+Math.floor(Math.random()*10-5))+'%';
+  setTimeout(moveFish,180)
 }
 function castFish(){
   if(!mgActive)return;
-  let zoneTop=50,fishTop=fishPos,diff=Math.abs(zoneTop-fishTop);
+  var diff=Math.abs(50-fishPos);
   if(diff<12){
-    mgScore++;
-    sfxCombo();
-    document.getElementById('fishresult').textContent='🎊 完美！连击 x'+mgScore;
-    document.getElementById('mgscore').textContent=mgScore;
-    S.fish_rec=Math.max(S.fish_rec||0,mgScore);
-    if(mgScore>=10)trackDaily('d8');
-  }else if(diff<25){
-    sfxClick();
-    document.getElementById('fishresult').textContent='😊 不错！';
-    trackDaily('d8');
-  }else{
-    play(0,100,0.15,'square',0.05);
-    document.getElementById('fishresult').textContent='😅 差一点...';
-  }
-}
-
-function selectMinigame(){
-  let ui=document.getElementById('mg-ui');
-  document.getElementById('minigame-overlay').style.display='block';
-  document.getElementById('scroll').style.display='none';
-  ui.innerHTML='<div class="mgtitle">🎮 小游戏</div>'+
-    '<div class="mginfo">选一个玩玩吧！</div>'+
-    '<div style="display:flex;flex-direction:column;gap:10px;margin:20px 0">'+
-    '<button class="pbtn ok" style="width:100%" id="mg-clicker">🎯 快速点击（最佳:'+(S.minigame_rec||0)+'）</button>'+
-    '<button class="pbtn ok" style="width:100%" id="mg-fish">🎣 钓鱼（最佳:'+(S.fish_rec||0)+'）</button>'+
-    '</div>'+
-    '<button class="pbtn cancel" id="mg-quit">退出</button>';
+    mgScore++;sfxBuild();document.getElementById('fishresult').textContent='🎊 完美！连击 x'+mgScore;
+    document.getElementById('mgscore').textContent=mgScore;S.fish_rec=Math.max(S.fish_rec||0,mgScore);
+    if(mgScore>=10)trackDaily('d8')
+  }else if(diff<25){sfxClick();document.getElementById('fishresult').textContent='😊 不错！';trackDaily('d8')}
+  else{play(0,100,0.15,'square',0.05);document.getElementById('fishresult').textContent='😅 差一点...'}
 }
 function endMinigame(){
-  mgActive=false;clearInterval(mgInterval);
-  let reward=0;
-  if(mgType==='clicker'){trackDaily('d7');reward=mgScore*Math.max(realIncome(),10)*5;S.minigame_rec=Math.max(S.minigame_rec||0,mgScore);}
-  else if(mgType==='fish'){reward=mgScore*Math.max(realIncome(),10)*10;}
+  mgActive=false;clearInterval(mgInt);
+  var reward=0;
+  if(mgType==='clicker'){trackDaily('d7');reward=mgScore*Math.max(realIncome(),10)*5;S.minigame_rec=Math.max(S.minigame_rec||0,mgScore)}
+  else if(mgType==='fish'){reward=mgScore*Math.max(realIncome(),10)*10}
   S.gold+=reward;save();updateUI();sfxGold();
-  let ui=document.getElementById('mg-ui');
-  ui.innerHTML='<div class="mgtitle">🎉 游戏结束！</div>'+
-    '<div class="mg-score">'+mgScore+'</div>'+
-    '<div style="color:#ffd700;font-size:16px">+'+fmt(reward)+' 💰</div>'+
-    '<div style="margin-top:16px"><button class="pbtn ok" id="mg-close">继续</button></div>';
+  var ui=document.getElementById('mg-ui');
+  ui.innerHTML='<div class="mgtitle">🎉 结束！</div>'+
+    '<div class="mg-score">'+mgScore+' 分</div>'+
+    '<div style="color:#ffd700;font-size:18px;margin:8px 0">+'+fmt(reward)+' 💰</div>'+
+    '<div style="margin-top:16px"><button class="pbtn ok" id="mg-close">继续</button></div>'
 }
 function closeMinigame(){
-  mgActive=false;clearInterval(mgInterval);
+  mgActive=false;clearInterval(mgInt);
   document.getElementById('minigame-overlay').style.display='none';
   document.getElementById('scroll').style.display='';
-  S.minigame_rec=S.minigame_rec||0;S.fish_rec=S.fish_rec||0;
+  switchTab('home')
 }
 
-// ==================== 合成系统 ====================
-let synOpen=false;
-function toggleSyn(){synOpen=!synOpen;document.getElementById('synpanel').style.display=synOpen?'block':'none';document.getElementById('scroll').style.display=synOpen?'none':'';if(synOpen)renderSyn();}
+// ==================== 合成 ====================
 function canSynth(r){
-  for(let fid of r.from){
-    let count=r.from.filter(x=>x===fid).length;
-    let have=S.found.filter(x=>x===fid).length;
-    if(have<count)return false;
-  }
-  return true;
+  for(var i=0;i<r.from.length;i++){var fid=r.from[i];var count=r.from.filter(function(x){return x===fid}).length;var have=S.found.filter(function(x){return x===fid}).length;if(have<count)return false}
+  return true
 }
 function doSynth(rid){
-  let r=RECIPES.find(x=>x.id===rid);if(!r||!canSynth(r))return;
-  for(let fid of r.from){let idx=S.found.indexOf(fid);if(idx>-1)S.found.splice(idx,1);}
+  var r=RECIPES.find(function(x){return x.id===rid});if(!r||!canSynth(r))return;
+  r.from.forEach(function(fid){var idx=S.found.indexOf(fid);if(idx>-1)S.found.splice(idx,1)});
   S.found.push(r.to);S.synth=(S.synth||0)+1;trackDaily('d6');
-  save();sfxBuild();flyText('🔮 合成 '+r.n+'！');renderSyn();updateUI();
+  save();sfxBuild();flyText('🔮 合成 '+r.n+'！');renderSyn();updateUI()
 }
 function renderSyn(){
-  document.getElementById('slist').innerHTML=RECIPES.map(r=>{
-    let ok=canSynth(r);
-    return '<div class="recipe-item"><div class="ri">'+r.icon+'</div><div class="rtx"><div class="rn">'+r.n+'</div><div class="rd">'+r.desc+' (需要: '+r.from.map(f=>IT.find(i=>i.id===f).n.substring(0,3)).join('+')+')</div></div><button class="rbtn'+(ok?'':' disabled')+'" '+(ok?'data-syn="'+r.id+'"':'disabled')+'>合成</button></div>';
-  }).join('');
+  document.getElementById('slist').innerHTML=RECIPES.map(function(r){
+    var ok=canSynth(r);
+    return '<div class="recipe-item"><div class="ri">'+r.icon+'</div><div class="rtx"><div class="rn">'+r.n+'</div><div class="rd">'+r.desc+'</div></div><button class="rbtn'+(ok?'':' disabled')+'" '+(ok?'data-syn="'+r.id+'"':'disabled')+'>合成</button></div>'
+  }).join('')
 }
 
-// ==================== 伙伴系统 ====================
-let petOpen=false;
-function togglePet(){petOpen=!petOpen;document.getElementById('petpanel').style.display=petOpen?'block':'none';document.getElementById('scroll').style.display=petOpen?'none':'';if(petOpen)renderPet();}
+// ==================== 伙伴 ====================
 function renderPet(){
   document.getElementById('petpow').textContent=playerAtk();
-  document.getElementById('petlist').innerHTML=PETS.map(p=>{
-    let owned=S.pets.includes(p.id);
-    return '<div class="pitem flex'+(owned?' found':'')+'"><div class="pi">'+p.icon+'</div><div class="ptx"><div class="pn">'+p.n+' (ATK +'+p.atk+')</div><div class="pd">'+p.desc+'</div></div><div class="pr">'+(owned?'✅ 已拥有':'💰 '+fmt(p.cost)+(owned?'':'<button class="rbtn" style="margin-top:4px" data-buy-pet="'+p.id+'">招募</button>'))+'</div></div>';
-  }).join('');
+  document.getElementById('petlist').innerHTML=PETS.map(function(p){
+    var owned=S.pets.includes(p.id);
+    return '<div class="pitem flex'+(owned?' found':'')+'"><div class="pi">'+p.icon+'</div><div class="ptx"><div class="pn">'+p.n+' <span style="font-size:10px;color:#6cf">ATK+'+p.atk+'</span></div><div class="pd">'+p.desc+'</div></div><div class="pr">'+(owned?'✅ 已拥有':'<button class="rbtn" style="margin-top:4px" data-buy-pet="'+p.id+'">💰 '+fmt(p.cost)+'</button>')+'</div></div>'
+  }).join('')
 }
 function buyPet(id){
-  let p=PETS.find(x=>x.id===id);if(!p)return;
-  if(S.pets.includes(id)){flyText('🐾 已拥有 '+p.n);return;}
-  if(S.gold<p.cost){flyText('💰 金币不足！');return;}
-  S.gold-=p.cost;S.pets.push(id);save();sfxGold();
-  flyText('🐾 '+p.n+' 加入了队伍！');
-  trackDaily('d11');renderPet();updateUI();
+  var p=PETS.find(function(x){return x.id===id});if(!p)return;
+  if(S.pets.includes(id)){flyText('🐾 已拥有 '+p.n);return}
+  if(S.gold<p.cost){flyText('💰 金币不足！');return}
+  S.gold-=p.cost;S.pets.push(id);save();sfxGold();flyText('🐾 '+p.n+' 加入队伍！');renderPet();updateUI()
 }
 
 // ==================== 排行榜 ====================
-let lbOpen=false;
-function toggleLB(){lbOpen=!lbOpen;document.getElementById('lbpanel').style.display=lbOpen?'block':'none';document.getElementById('scroll').style.display=lbOpen?'none':'';if(lbOpen)renderLB();}
 function renderLB(){
-  let items=[{name:'你',gold:S.gold}].concat(LEADERBOARD);
-  items.sort((a,b)=>b.gold-a.gold);
-  document.getElementById('lblist').innerHTML=items.map((l,i)=>{
-    let rank=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
-    return '<div class="lb-item"><span class="lb-rank">'+rank+'</span><span class="lb-name">'+l.name+'</span><span class="lb-gold">💰 '+fmt(l.gold)+'</span></div>';
-  }).join('');
+  var items=[{name:'你',gold:S.gold}].concat(LEADERBOARD);
+  items.sort(function(a,b){return b.gold-a.gold});
+  document.getElementById('lblist').innerHTML=items.map(function(l,i){
+    var rank=i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1);
+    return '<div class="lb-item"><span class="lb-rank">'+rank+'</span><span class="lb-name">'+l.name+'</span><span class="lb-gold">💰 '+fmt(l.gold)+'</span></div>'
+  }).join('')
 }
+
+// ==================== 离线 ====================
+var offAmt=0,offDt=0;
+(function(){offDt=(Date.now()-S.last)/1000;if(offDt>10){var inc=getIncome();offAmt=Math.floor(Math.min(offDt,86400)*inc);if(offAmt>0)showOffline(offAmt)}S.last=Date.now();save()})();
+function showOffline(amt){document.getElementById('oam').textContent='+'+fmt(amt)+' 💰';document.getElementById('otm').textContent='离线 '+fmtTime(offDt);document.getElementById('offline').style.display='flex'}
+function claimOffline(){S.gold+=offAmt;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0}
+function claimOfflineDouble(){S.gold+=offAmt*2;save();updateUI();sfxGold();document.getElementById('offline').style.display='none';offAmt=0;flyText('📺 双倍！')}
+
+// ==================== 宝箱 ====================
+var chestAmt=0,chestX2=false;
+function openChest(amt,x2){chestAmt=amt;chestX2=x2;document.getElementById('chestResult').textContent=fmt(amt)+' 💰';document.getElementById('chestSkip').style.display=x2?'none':'';document.getElementById('chest-overlay').style.display='flex'}
+function closeChest(){document.getElementById('chest-overlay').style.display='none'}
+function claimChest(){S.gold+=chestX2?chestAmt:chestAmt*2;save();updateUI();sfxGold();closeChest()}
+function claimChestSkip(){S.gold+=chestAmt;save();updateUI();sfxGold();closeChest()}
+
+// ==================== 飘字 ====================
+function flyText(t){var el=document.createElement('div');el.className='fly';el.textContent=t;document.getElementById('game').appendChild(el);setTimeout(function(){el.remove()},1400)}
 
 // ==================== 事件代理 ====================
 document.getElementById('game').addEventListener('click',function(e){
-  let t=e.target;
-  if(t.classList.contains('build')){let id=t.dataset.bld;curBld=id;isExplore=false;sfxClick();showBldPopup(id);return;}
-  if(t.id==='pok'){if(isExplore){hidePopup();return;}if(!curBld||doBuild(curBld)){hidePopup();}sfxClick();return;}
-  if(t.id==='pca'){hidePopup();sfxClick();return;}
-  if(t.id==='btexp'){doExplore();return;}
-  if(t.id==='btbat'){startBattle();return;}
-  if(t.id==='btplay'){selectMinigame();return;}
-  if(t.id==='btsyn'){sfxClick();toggleSyn();return;}
-  if(t.id==='btcol'){sfxClick();toggleCol();return;}
-  if(t.id==='btach'){sfxClick();toggleAch();return;}
-  if(t.id==='btad'){doAd();return;}
-  if(t.id==='btshop'){sfxClick();toggleShop();return;}
-  if(t.id==='btdaily'){sfxClick();toggleDaily();return;}
-  if(t.id==='ccb'){toggleCol();return;}
-  if(t.id==='acb'){toggleAch();return;}
-  if(t.id==='scb'){toggleShop();return;}
-  if(t.id==='dcb'){toggleDaily();return;}
-  if(t.id==='snb'){toggleSyn();return;}
-  if(t.id==='peb'){togglePet();return;}
-  if(t.id==='lbb'){toggleLB();return;}
-  if(t.classList.contains('sbtn')){buyShop(t.dataset.shop);return;}
-  if(t.id==='chestClose'){claimChest();return;}
-  if(t.id==='chestSkip'){claimChestSkip();return;}
-  if(t.id==='oc1'){claimOffline();return;}
-  if(t.id==='oc2'){claimOfflineDouble();return;}
-  if(t.id==='battle-close'){closeBattle();return;}
-  if(t.classList.contains('attack-btn')){battleAttack();return;}
-  if(t.classList.contains('flee-btn')){closeBattle();sfxClick();flyText('🏃 逃跑了...');return;}
-  if(t.id==='mg-quit'||t.id==='mg-close'){closeMinigame();return;}
-  if(t.id==='mgquit'){closeMinigame();return;}
-  if(t.id==='mg-clicker'){startMinigame('clicker');return;}
-  if(t.id==='mg-fish'){startMinigame('fish');return;}
-  if(t.id==='mgcast'){castFish();return;}
-  if(t.dataset.syn){doSynth(t.dataset.syn);return;}
-  if(t.dataset.buyPet){buyPet(t.dataset.buyPet);return;}
-  if(t.id==='btpet'||(t.parentElement&&t.parentElement.id==='btpet')){sfxClick();togglePet();return;}
-  if(t.id==='btlb'||(t.parentElement&&t.parentElement.id==='btlb')){sfxClick();toggleLB();return;}
+  var t=e.target;
+  // 导航Tab
+  if(t.classList.contains('nav-btn')||t.parentElement.classList.contains('nav-btn')){
+    var btn=t.classList.contains('nav-btn')?t:t.parentElement;
+    if(btn.id==='more-btn'){var m=document.getElementById('more-menu');m.style.display=m.style.display==='block'?'none':'block';return}
+    var tab=btn.dataset.tab;if(tab)switchTab(tab);return
+  }
+  // 更多菜单
+  if(t.classList.contains('mm-item')||t.parentElement.classList.contains('mm-item')){
+    var mi=t.classList.contains('mm-item')?t:t.parentElement,act=mi.dataset.action;
+    document.getElementById('more-menu').style.display='none';
+    if(act==='col'){openPanel('colpanel');renderCol()}
+    else if(act==='ach'){openPanel('achieve');renderAch()}
+    else if(act==='shop'){openPanel('shoppanel');updateShop()}
+    else if(act==='daily'){openPanel('dailypanel');renderDaily()}
+    else if(act==='synth'){openPanel('synpanel');renderSyn()}
+    else if(act==='pet'){openPanel('petpanel');renderPet()}
+    else if(act==='lb'){openPanel('lbpanel');renderLB()}
+    else if(act==='ad')doAd();
+    sfxClick();return
+  }
+  // 建筑按钮
+  if(t.classList.contains('build')){var id=t.dataset.bld;curBld=id;isExplore=false;sfxClick();showBldPopup(id);return}
+  // 弹窗
+  if(t.id==='pok'){if(isExplore){hidePopup();return}if(!curBld||doBuild(curBld)){hidePopup()}sfxClick();return}
+  if(t.id==='pca'){hidePopup();sfxClick();return}
+  // 面板关闭
+  if(t.id==='ccb'){closePanel('colpanel')}
+  else if(t.id==='acb'){closePanel('achieve')}
+  else if(t.id==='scb'){closePanel('shoppanel')}
+  else if(t.id==='dcb'){closePanel('dailypanel')}
+  else if(t.id==='snb'){closePanel('synpanel')}
+  else if(t.id==='peb'){closePanel('petpanel')}
+  else if(t.id==='lbb'){closePanel('lbpanel')}
+  // 商城购买
+  if(t.classList.contains('sbtn')){buyShop(t.dataset.shop);return}
+  // 宝箱
+  if(t.id==='chestClose'){claimChest();return}
+  if(t.id==='chestSkip'){claimChestSkip();return}
+  // 离线
+  if(t.id==='oc1'){claimOffline();return}
+  if(t.id==='oc2'){claimOfflineDouble();return}
+  // 战斗
+  if(t.id==='battle-close'||t.classList.contains('flee-btn')){closeBattle();sfxClick();return}
+  if(t.classList.contains('attack-btn')){battleAttack();return}
+  // 小游戏
+  if(t.id==='mg-quit'||t.id==='mg-close'||t.id==='mgquit'){closeMinigame();return}
+  if(t.id==='mg-clicker'){startMinigame('clicker');return}
+  if(t.id==='mg-fish'){startMinigame('fish');return}
+  if(t.id==='mgcast'){castFish();return}
+  // 合成
+  if(t.dataset.syn){doSynth(t.dataset.syn);return}
+  // 伙伴
+  if(t.dataset.buyPet){buyPet(t.dataset.buyPet);return}
 });
-document.getElementById('ol').addEventListener('click',function(e){if(e.target===this)hidePopup();});
+document.getElementById('ol').addEventListener('click',function(e){if(e.target===this)hidePopup()});
+
+// 点击空白关闭更多菜单
+document.addEventListener('click',function(e){
+  var m=document.getElementById('more-menu');
+  if(m.style.display==='block'&&!e.target.closest('#more-menu')&&!e.target.closest('#more-btn'))m.style.display='none'
+});
 
 // ==================== 初始化 ====================
-updateUI();
+switchTab('home');updateUI();
+
 setInterval(function(){
-  S.gold+=realIncome();
-  save();
-  document.getElementById('gld').textContent='💰 '+fmt(S.gold);
+  S.gold+=realIncome();save();
+  document.getElementById('gld').textContent=fmt(S.gold);
   if(realIncome()>=500)trackDaily('d3');
-  if(!battleActive&&!mgActive&&!colOpen&&!achOpen&&!shopOpen&&!dailyOpen&&!synOpen&&!petOpen&&!lbOpen){
-    if(Math.random()<0.02)checkEvent();
-  }
+  if(!battleActive&&!mgActive&&Math.random()<0.015)checkEvent();
 },1000);
 
-// ==================== 月度检查 ====================
-if((S.cardEnd||0)>Date.now()){
-  let today=new Date().getDate();
-  if(S.cardDay!==today){S.gems+=3;S.gold+=100000;S.cardDay=today;save();sfxGold();}
-}
+// 月卡每日
+if((S.cardEnd||0)>Date.now()){var d=new Date().getDate();if(S.cardDay!==d){S.gems+=3;S.gold+=100000;S.cardDay=d;save()}}
 
-// 底部新增伙伴和排行按钮
-let bottomEl=document.getElementById('bottom');
-bottomEl.innerHTML=bottomEl.innerHTML.replace('</div>','')+'';
-
-console.log('熊爪小岛 V4 🎉 战斗|随机事件|小游戏|合成|伙伴|排行榜');
+console.log('熊爪小岛 V5 🎨 新UI布局 | 5Tab导航+更多菜单')
 </script>
 </body>
 </html>
