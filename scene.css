@@ -1,0 +1,127 @@
+﻿<style>
+/* ========== 建筑场景面板 ========== */
+.bscene { position:absolute; top:0; left:0; right:0; bottom:0; z-index:60; display:none; flex-direction:column; }
+.bscene.show { display:flex; }
+.bscene-hdr { display:flex; align-items:center; padding:12px 14px; background:rgba(10,10,20,.92); border-bottom:1px solid rgba(255,255,255,.06); gap:10px; z-index:2; }
+.bscene-hdr .back { padding:6px 14px; border-radius:8px; font-size:14px; cursor:pointer; border:none; color:#ccc; background:rgba(255,255,255,.08); }
+.bscene-hdr .back:active { background:rgba(255,255,255,.15); }
+.bscene-hdr .btitle { flex:1; font-size:16px; font-weight:700; color:#ffd700; text-align:center; }
+.bscene-bg { flex:1; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+.bscene-stats { padding:8px 14px; background:rgba(10,10,20,.9); display:flex; justify-content:space-around; font-size:12px; color:#aaa; border-top:1px solid rgba(255,255,255,.05); }
+.bscene-stats .ss { text-align:center; }
+.bscene-stats .ss .sv { font-size:16px; font-weight:700; }
+.bscene-stats .ss .sv.gold { color:#ffd700; }
+.bscene-stats .ss .sv.green { color:#6a6; }
+.bscene-game { min-height:180px; padding:12px 14px; background:rgba(10,10,20,.95); position:relative; overflow:hidden; }
+.bscene-game .gm-title { text-align:center; color:#ffd700; font-size:14px; font-weight:700; margin-bottom:8px; }
+.bscene-game .gm-info { text-align:center; color:#888; font-size:10px; margin-bottom:10px; }
+.bscene-upgrade { padding:10px 14px; background:rgba(10,10,20,.9); border-top:1px solid rgba(255,255,255,.05); display:flex; align-items:center; justify-content:space-between; }
+.bscene-upgrade .uinfo { color:#aaa; font-size:11px; }
+.bscene-upgrade .ubtn { padding:10px 20px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; border:none; color:#fff; background:linear-gradient(135deg,#5b8,#3a6); }
+.bscene-upgrade .ubtn:active { transform:scale(.94); }
+.bscene-upgrade .ubtn.max { background:#222; color:#555; cursor:default; }
+
+/* ===== 浆果树场景 ===== */
+#scene-tree .bscene-bg { background:linear-gradient(180deg,#1a3a1a,#0d2d0d,#1a1a0a); }
+#scene-tree .bscene-bg::before { content:'🌳\00a0\00a0🌳\00a0\00a0🌳'; font-size:40px; position:absolute; top:30%; }
+#scene-tree .bscene-bg::after { content:''; position:absolute; bottom:0; left:0; right:0; height:40%; background:linear-gradient(0deg,rgba(30,60,10,.6),transparent); }
+.tree-fruit { position:absolute; font-size:24px; animation:fruitDrop 2.5s linear forwards; pointer-events:auto; cursor:pointer; z-index:10; }
+@keyframes fruitDrop { 0%{top:-40px;} 90%{top:calc(100% - 50px); opacity:1;} 100%{top:100%; opacity:0;} }
+.tree-fruit:active { transform:scale(1.3); }
+
+/* ===== 矿场场景 ===== */
+#scene-mine .bscene-bg { background:linear-gradient(180deg,#2a1a0a,#1a1008,#0a0808); }
+#scene-mine .bscene-bg::before { content:'⛰️'; font-size:60px; position:absolute; top:20%; left:10%; }
+#scene-mine .bscene-bg::after { content:'⛰️'; font-size:45px; position:absolute; top:30%; right:15%; }
+.mine-rock { position:absolute; font-size:28px; cursor:pointer; animation:rockShake 1.5s ease-in-out infinite; pointer-events:auto; }
+@keyframes rockShake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-2px);} 75%{transform:translateX(2px);} }
+
+/* ===== 农田场景 ===== */
+#scene-farm .bscene-bg { background:linear-gradient(180deg,#4a8,#3a6,#6a4); }
+#scene-farm .bscene-bg::before { content:'🌾\00a0🌾\00a0🌾\00a0🌾\00a0🌾'; font-size:28px; position:absolute; top:25%; letter-spacing:4px; }
+#scene-farm .bscene-bg::after { content:'☀️'; font-size:40px; position:absolute; top:8%; right:12%; animation:sunBounce 2s ease-in-out infinite; }
+@keyframes sunBounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+.water-bar-bg { width:100%; height:20px; background:#333; border-radius:10px; overflow:hidden; margin:8px 0; }
+.water-bar-fill { height:100%; background:linear-gradient(90deg,#4af,#6cf); border-radius:10px; transition:width .3s; }
+.water-zone { position:absolute; width:40px; height:24px; border:2px solid #ffd700; border-radius:6px; top:50%; transition:left .6s; pointer-events:none; }
+
+/* ===== 渔场场景 ===== */
+#scene-fish .bscene-bg { background:linear-gradient(180deg,#1a4a6a,#0a2a4a,#0a1a2a); }
+#scene-fish .bscene-bg::before { content:'🌊'; font-size:30px; position:absolute; bottom:10%; left:5%; animation:waveMove 3s ease-in-out infinite; }
+#scene-fish .bscene-bg::after { content:'🌊'; font-size:25px; position:absolute; bottom:8%; right:10%; animation:waveMove 2.5s ease-in-out infinite .5s; }
+@keyframes waveMove { 0%,100%{transform:translateX(0);} 50%{transform:translateX(10px);} }
+.fish-swim { font-size:28px; position:absolute; left:-40px; animation:swimAcross 4s linear forwards; }
+@keyframes swimAcross { to{left:105%;} }
+.fish-hook { position:absolute; bottom:20%; left:50%; transform:translateX(-50%); font-size:30px; }
+
+/* ===== 磨坊场景 ===== */
+#scene-mill .bscene-bg { background:linear-gradient(180deg,#6b5,#5a4,#48483a); }
+#scene-mill .bscene-bg::before { content:''; position:absolute; width:50px; height:90px; background:linear-gradient(180deg,#c8b898,#a89878); border-radius:4px; top:30%; left:calc(50% - 25px); }
+#scene-mill .bscene-bg::after { content:''; position:absolute; width:8px; height:50px; background:#8a7a5a; top:25%; left:50%; border-radius:2px; transform-origin:bottom center; animation:millSpin 2s linear infinite paused; }
+#scene-mill .bscene-bg.spinning::after { animation-play-state:running; }
+@keyframes millSpin { to{transform:rotate(360deg);} }
+
+/* ===== 酒馆场景 ===== */
+#scene-bar .bscene-bg { background:linear-gradient(180deg,#5a3a1a,#3a2010,#1a1008); }
+#scene-bar .bscene-bg::before { content:'🏮\00a0\00a0🍺\00a0\00a0🏮'; font-size:30px; position:absolute; top:15%; }
+#scene-bar .bscene-bg::after { content:''; position:absolute; bottom:0; left:0; right:0; height:30%; background:linear-gradient(0deg,rgba(80,40,10,.4),transparent); }
+.customer-order { font-size:24px; padding:8px 16px; background:rgba(0,0,0,.4); border-radius:10px; color:#fc6; font-weight:700; margin:4px 0; }
+
+/* ===== 神殿场景 ===== */
+#scene-temple .bscene-bg { background:linear-gradient(180deg,#4a3a1a,#3a2a0a,#1a1008); }
+#scene-temple .bscene-bg::before { content:'🏛️'; font-size:55px; position:absolute; top:20%; }
+#scene-temple .bscene-bg::after { content:'✨'; font-size:20px; position:absolute; top:25%; animation:sparkle 1s ease-in-out infinite; }
+@keyframes sparkle { 0%,100%{opacity:.3; transform:scale(.8);} 50%{opacity:1; transform:scale(1.1);} }
+.pray-bar-bg { width:100%; height:14px; background:#222; border-radius:7px; overflow:hidden; margin:10px 0; }
+.pray-bar-fill { height:100%; background:linear-gradient(90deg,#c84,#fc6,#ffd700); border-radius:7px; transition:width .05s linear; }
+
+/* ===== 铁匠铺场景 ===== */
+#scene-forge .bscene-bg { background:linear-gradient(180deg,#4a1a0a,#2a1008,#0a0808); }
+#scene-forge .bscene-bg::before { content:'🔥'; font-size:35px; position:absolute; top:35%; animation:fireFlicker .3s ease-in-out infinite; }
+@keyframes fireFlicker { 0%,100%{transform:scaleY(1); opacity:1;} 50%{transform:scaleY(.85); opacity:.8;} }
+.hammer-swing { position:absolute; width:20px; height:6px; background:#ccc; border-radius:3px; top:40%; transition:right .5s cubic-bezier(.3,.7,.7,.3); }
+
+/* ===== 法师塔场景 ===== */
+#scene-wizard .bscene-bg { background:linear-gradient(180deg,#1a1a3a,#2a1a4a,#0a0a1a); }
+#scene-wizard .bscene-bg::before { content:'🔮'; font-size:40px; position:absolute; top:25%; animation:wizFloat 2s ease-in-out infinite; }
+@keyframes wizFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+.spell-circle { position:absolute; width:36px; height:36px; border-radius:50%; border:2px solid rgba(150,120,220,.6); cursor:pointer; pointer-events:auto; }
+.spell-circle::after { content:''; display:block; width:8px; height:8px; background:#c9f; border-radius:50%; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); }
+.spell-line { position:absolute; height:2px; background:rgba(150,120,220,.4); transform-origin:left center; pointer-events:none; }
+
+/* ===== 贸易中心场景 ===== */
+#scene-market .bscene-bg { background:linear-gradient(180deg,#4a3a2a,#3a2a1a,#2a1a0a); }
+#scene-market .bscene-bg::before { content:'🏪\00a0🏬\00a0🏛️'; font-size:28px; position:absolute; top:20%; letter-spacing:8px; }
+.trade-price { font-size:28px; font-weight:700; transition:color .3s; }
+.trade-price.up { color:#5b8; }
+.trade-price.down { color:#e55; }
+
+/* ===== 龙巢场景 ===== */
+#scene-dragon .bscene-bg { background:linear-gradient(180deg,#5a1a0a,#3a1008,#1a0808); }
+#scene-dragon .bscene-bg::before { content:'🌋'; font-size:50px; position:absolute; top:15%; }
+#scene-dragon .bscene-bg::after { content:'🐉'; font-size:45px; position:absolute; top:40%; animation:dragonFloat 3s ease-in-out infinite; }
+@keyframes dragonFloat { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-6px);} }
+.dragon-mouth { position:absolute; font-size:20px; top:55%; left:50%; transform:translateX(-50%); transition:transform .25s; }
+.dragon-mouth.open { transform:translateX(-50%) scaleY(1.5); }
+.dragon-food { position:absolute; font-size:28px; transition:all .3s ease-out; }
+
+/* ===== 城堡场景 ===== */
+#scene-castle .bscene-bg { background:linear-gradient(180deg,#2a2a4a,#1a1a3a,#0a1a2a); }
+#scene-castle .bscene-bg::before { content:'🏰'; font-size:55px; position:absolute; top:20%; }
+.slot-reel { display:inline-block; width:60px; height:60px; background:rgba(0,0,0,.5); border-radius:10px; margin:4px; font-size:36px; display:inline-flex; align-items:center; justify-content:center; border:2px solid rgba(255,215,0,.2); overflow:hidden; }
+.slot-reel .sr-inner { animation:slotSpin .1s linear infinite; }
+@keyframes slotSpin { 0%{transform:translateY(0);} 100%{transform:translateY(-240px);} }
+
+/* ========== 通用小游戏元素 ========== */
+.game-btn { padding:10px 24px; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer; border:none; color:#fff; transition:all .15s; }
+.game-btn:active { transform:scale(.92); }
+.game-btn.go { background:linear-gradient(135deg,#5b8,#3a6); }
+.game-btn.no { background:linear-gradient(135deg,#755,#533); }
+.game-btn.play { background:linear-gradient(135deg,#c84,#a63); font-size:15px; padding:12px 36px; }
+.btn-2col { display:flex; gap:10px; justify-content:center; margin-top:8px; }
+.btn-2col .game-btn { flex:1; }
+.result-block { text-align:center; padding:12px; }
+.result-block .rscore { font-size:32px; color:#ffd700; font-weight:700; }
+.result-block .rgold { font-size:18px; color:#6a6; margin-top:4px; }
+.result-block .rbest { font-size:11px; color:#888; margin-top:2px; }
+</style>
