@@ -49,14 +49,8 @@
   border-radius:50% 50% 0 0;
 }
 /* 树干+树冠 — 用JS动态生成多个树 */
-.scene-tree-trunk{
-  position:absolute;bottom:35%;width:14px;
-  background:linear-gradient(90deg,#6b4226,#8b5a2b,#6b4226);border-radius:3px 3px 0 0;
-}
-.scene-tree-crown{
-  position:absolute;width:0;height:0;border-left:30px solid transparent;
-  border-right:30px solid transparent;border-bottom:50px solid;
-}
+.scene-tree-trunk{position:absolute;bottom:35%;width:14px!important;min-width:0;background:linear-gradient(90deg,#6b4226,#8b5a2b,#6b4226);border-radius:3px 3px 0 0}
+.scene-tree-crown{position:absolute;width:0!important;min-width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-bottom:50px solid;overflow:visible}
 .scene-tree-crown.c1{border-bottom-color:#2d6a1e}
 .scene-tree-crown.c2{border-bottom-color:#3d8b2e}
 .scene-tree-crown.c3{border-bottom-color:#4a9a3a}
